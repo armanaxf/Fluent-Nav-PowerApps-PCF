@@ -8,7 +8,7 @@ A suite of **Fluent UI v9** PCF components for Power Apps Canvas Apps, designed 
 |-----------|-------------|--------|
 | **FluentNav** | Navigation drawer with hierarchical menu support | ✅ Available |
 | **FluentMessageBar** | Inline message bar for alerts, warnings, and notifications | ✅ Available |
-| FluentBreadcrumb | Hierarchical navigation breadcrumb | 🔜 Coming Soon |
+| **FluentBreadcrumb** | Hierarchical navigation breadcrumb | ✅ Available |
 | FluentCard | Content card container | 🔜 Coming Soon |
 | FluentDialog | Modal dialog for confirmations and forms | 🔜 Coming Soon |
 | FluentToast | Toast notifications | 🔜 Coming Soon |
@@ -50,12 +50,23 @@ An inline message bar for displaying alerts and notifications.
 | Property | Type | Description |
 |----------|------|-------------|
 | `Message` | Text | The message to display |
-| `Intent` | Text | `info`, `success`, `warning`, or `error` |
+| `Intent` | Enum | `info`, `success`, `warning`, or `error` |
 | `Title` | Text | Optional title above the message |
 | `Dismissible` | Boolean | Whether user can dismiss the bar |
 | `ActionText` | Text | Optional action button text |
 | `IsDismissed` | Boolean (Output) | Triggers when dismissed |
 | `ActionClicked` | Boolean (Output) | Triggers when action clicked |
+
+### FluentBreadcrumb
+
+A breadcrumb component for hierarchical navigation.
+
+**Properties:**
+| Property | Type | Description |
+|----------|------|-------------|
+| `items` | Dataset | Collection of breadcrumb items (ItemKey, ItemName, ItemIcon) |
+| `Theme` | Enum | `webLight`, `webDark`, `teamsLight`, or `teamsDark` |
+| `SelectedKey` | Text (Output) | Key of the clicked breadcrumb item |
 
 ## Development
 
