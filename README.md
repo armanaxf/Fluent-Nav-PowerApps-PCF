@@ -9,7 +9,7 @@ A suite of **Fluent UI v9** PCF components for Power Apps Canvas Apps, designed 
 | **FluentNav** | Navigation drawer with hierarchical menu support | ✅ Available |
 | **FluentMessageBar** | Inline message bar for alerts, warnings, and notifications | ✅ Available |
 | **FluentBreadcrumb** | Hierarchical navigation breadcrumb | ✅ Available |
-| FluentCard | Content card container | 🔜 Coming Soon |
+| **FluentCard** | Content card container | ✅ Available |
 | FluentDialog | Modal dialog for confirmations and forms | 🔜 Coming Soon |
 | FluentToast | Toast notifications | 🔜 Coming Soon |
 | FluentDateRangePicker | Date range selection | 🔜 Coming Soon |
@@ -93,6 +93,22 @@ A breadcrumb component for hierarchical navigation. Automatically inherits Power
 |----------|------|-------------|
 | `items` | Dataset | Collection of breadcrumb items (ItemKey, ItemName, ItemIcon) |
 | `SelectedKey` | Text (Output) | Key of the clicked breadcrumb item |
+
+### FluentCard
+
+A versatile card component for displaying content in a structured layout.
+
+**Properties:**
+| Property | Type | Description |
+|----------|------|-------------|
+| `Title` | Text | Card title text |
+| `Subtitle` | Text | Card subtitle or description |
+| `ImageUrl` | URL | URL for the card header image |
+| `Size` | Enum | `small`, `medium`, or `large` |
+| `Orientation` | Enum | `vertical` or `horizontal` |
+| `Selectable` | Boolean | Whether the card can be selected |
+| `Selected` | Boolean (Output) | Whether the card is currently selected |
+| `Clicked` | Boolean (Output) | Triggers when the card is clicked |
 
 ## Development
 
