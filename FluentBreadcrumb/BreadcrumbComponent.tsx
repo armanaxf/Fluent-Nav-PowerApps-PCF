@@ -4,6 +4,8 @@ import {
     BreadcrumbItem,
     BreadcrumbButton,
     BreadcrumbDivider,
+    FluentProvider,
+    webLightTheme,
 } from "@fluentui/react-components";
 import * as FluentIcons from "@fluentui/react-icons";
 
@@ -34,28 +36,31 @@ const resolveIcon = (iconName?: string): React.JSX.Element | undefined => {
 export const FluentBreadcrumbComponent: React.FC<FluentBreadcrumbProps> = (props) => {
     const { items, onItemSelect } = props;
 
-    // No FluentProvider wrapper needed - Power Apps provides it for virtual controls
+    // FluentProvider with fallback theme for test harness
+    // In Power Apps runtime, the platform provides the theme context
     return (
-        <Breadcrumb aria-label="Breadcrumb" style={{ width: "100%" }}>
-            {items.map((item, index) => {
-                const isLast = index === items.length - 1;
-                const Icon = resolveIcon(item.icon);
+        <FluentProvider theme={webLightTheme} style={{ background: "transparent", width: "100%" }}>
+            <Breadcrumb aria-label="Breadcrumb">
+                {items.map((item, index) => {
+                    const isLast = index === items.length - 1;
+                    const Icon = resolveIcon(item.icon);
 
-                return (
-                    <React.Fragment key={item.key}>
-                        <BreadcrumbItem>
-                            <BreadcrumbButton
-                                icon={Icon}
-                                onClick={() => onItemSelect(item.key)}
-                                current={isLast}
-                            >
-                                {item.name}
-                            </BreadcrumbButton>
-                        </BreadcrumbItem>
-                        {!isLast && <BreadcrumbDivider />}
-                    </React.Fragment>
-                );
-            })}
-        </Breadcrumb>
+                    return (
+                        <React.Fragment key={item.key}>
+                            <BreadcrumbItem>
+                                <BreadcrumbButton
+                                    icon={Icon}
+                                    onClick={() => onItemSelect(item.key)}
+                                    current={isLast}
+                                >
+                                    {item.name}
+                                </BreadcrumbButton>
+                            </BreadcrumbItem>
+                            {!isLast && <BreadcrumbDivider />}
+                        </React.Fragment>
+                    );
+                })}
+            </Breadcrumb>
+        </FluentProvider>
     );
 };

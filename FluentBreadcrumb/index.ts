@@ -27,7 +27,15 @@ export class FluentBreadcrumb implements ComponentFramework.ReactControl<IInputs
         const dataset = context.parameters.items;
         const items: BreadcrumbItemData[] = [];
 
-        if (!dataset?.sortedRecordIds) return items;
+        if (!dataset?.sortedRecordIds || dataset.sortedRecordIds.length === 0) {
+            // Return default placeholder items to help users understand the structure
+            return [
+                { key: "home", name: "Home", icon: "HomeRegular" },
+                { key: "products", name: "Products", icon: "BoxRegular" },
+                { key: "electronics", name: "Electronics" },
+                { key: "phones", name: "Phones" },
+            ];
+        }
 
         for (const recordId of dataset.sortedRecordIds) {
             const record = dataset.records[recordId];

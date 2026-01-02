@@ -6,6 +6,8 @@ import {
     Text,
     makeStyles,
     tokens,
+    FluentProvider,
+    webLightTheme,
 } from "@fluentui/react-components";
 
 export interface FluentCardProps {
@@ -83,25 +85,27 @@ export const FluentCardComponent: React.FC<FluentCardProps> = (props) => {
     const previewClassName = `${styles.preview} ${orientation === "horizontal" ? styles.horizontalPreview : ""}`;
 
     return (
-        <Card
-            className={cardClassName}
-            selected={selectable ? selected : undefined}
-            onSelectionChange={selectable ? (_, data) => onSelect(data.selected) : undefined}
-            onClick={handleClick}
-        >
-            {imageUrl && (
-                <CardPreview className={previewClassName}>
-                    <img
-                        src={imageUrl}
-                        alt={title}
-                        className={styles.previewImage}
-                    />
-                </CardPreview>
-            )}
-            <CardHeader
-                header={<Text weight="semibold">{title}</Text>}
-                description={subtitle ? <Text size={200}>{subtitle}</Text> : undefined}
-            />
-        </Card>
+        <FluentProvider theme={webLightTheme} style={{ background: "transparent", width: "100%", height: "100%" }}>
+            <Card
+                className={cardClassName}
+                selected={selectable ? selected : undefined}
+                onSelectionChange={selectable ? (_, data) => onSelect(data.selected) : undefined}
+                onClick={handleClick}
+            >
+                {imageUrl && (
+                    <CardPreview className={previewClassName}>
+                        <img
+                            src={imageUrl}
+                            alt={title}
+                            className={styles.previewImage}
+                        />
+                    </CardPreview>
+                )}
+                <CardHeader
+                    header={<Text weight="semibold">{title}</Text>}
+                    description={subtitle ? <Text size={200}>{subtitle}</Text> : undefined}
+                />
+            </Card>
+        </FluentProvider>
     );
 };
