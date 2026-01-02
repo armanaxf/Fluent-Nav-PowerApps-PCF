@@ -40,7 +40,15 @@ export class FluentNav implements ComponentFramework.ReactControl<IInputs, IOutp
         const items: NavItemData[] = [];
 
         if (!dataset?.sortedRecordIds || dataset.sortedRecordIds.length === 0) {
-            return items;
+            // Return default placeholder items to help users understand the structure
+            return [
+                { key: "home", name: "Home", icon: "Home" },
+                { key: "dashboard", name: "Dashboard", icon: "Grid" },
+                { key: "documents", name: "Documents", icon: "Document" },
+                { key: "doc1", name: "Reports", icon: "Document", parentKey: "documents" },
+                { key: "doc2", name: "Templates", icon: "Document", parentKey: "documents" },
+                { key: "settings", name: "Settings", icon: "Settings" },
+            ];
         }
 
         for (const recordId of dataset.sortedRecordIds) {

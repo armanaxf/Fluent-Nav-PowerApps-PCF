@@ -29,6 +29,7 @@ A navigation drawer component with support for:
 - Collapsible sidebar
 - Custom header with icon or image
 - Selection events
+- **Default placeholder items** shown when no data is connected
 
 **Properties:**
 | Property | Type | Description |
@@ -41,6 +42,32 @@ A navigation drawer component with support for:
 | `SelectedKey` | Text (Output) | Currently selected item key |
 | `IsOpen` | Boolean (Output) | Whether drawer is expanded |
 | `HeaderSelected` | Boolean (Output) | Triggers on header click |
+
+**Setting up navItems:**
+
+Create a collection in Power Apps with these columns:
+
+| Column | Required | Description |
+|--------|----------|-------------|
+| `ItemKey` | ✅ Yes | Unique identifier for the item |
+| `ItemName` | ✅ Yes | Display text for the item |
+| `ItemIcon` | No | Fluent UI icon name (e.g., `Home`, `Settings`, `Document`) |
+| `ItemParentKey` | No | Key of parent item (for nested/hierarchical items) |
+
+**Example (Power Apps formula):**
+```
+ClearCollect(
+    NavItems,
+    { ItemKey: "home", ItemName: "Home", ItemIcon: "Home", ItemParentKey: "" },
+    { ItemKey: "dashboard", ItemName: "Dashboard", ItemIcon: "Grid", ItemParentKey: "" },
+    { ItemKey: "documents", ItemName: "Documents", ItemIcon: "Document", ItemParentKey: "" },
+    { ItemKey: "reports", ItemName: "Reports", ItemIcon: "Document", ItemParentKey: "documents" },
+    { ItemKey: "templates", ItemName: "Templates", ItemIcon: "Document", ItemParentKey: "documents" },
+    { ItemKey: "settings", ItemName: "Settings", ItemIcon: "Settings", ItemParentKey: "" }
+);
+```
+
+Then bind `NavItems` to the `navItems` property of the control.
 
 ### FluentMessageBar
 
