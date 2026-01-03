@@ -1,11 +1,12 @@
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
-import { FluentCardComponent } from "./CardComponent";
+import { FluentCardComponent, CardAppearance } from "./CardComponent";
 import * as React from "react";
 
 export class FluentCard implements ComponentFramework.ReactControl<IInputs, IOutputs> {
     private notifyOutputChanged: () => void;
     private selected = false;
     private clicked = false;
+    private actionClicked = false;
 
     constructor() {
         // Empty
@@ -29,6 +30,11 @@ export class FluentCard implements ComponentFramework.ReactControl<IInputs, IOut
         this.notifyOutputChanged();
     };
 
+    private handleActionClick = (): void => {
+        this.actionClicked = !this.actionClicked;
+        this.notifyOutputChanged();
+    };
+
     private parseSize(sizeStr: string | null): "small" | "medium" | "large" {
         const size = sizeStr?.toLowerCase();
         if (size === "small" || size === "large") {
@@ -45,24 +51,41 @@ export class FluentCard implements ComponentFramework.ReactControl<IInputs, IOut
         return "vertical";
     }
 
+    private parseAppearance(appearanceStr: string | null): CardAppearance {
+        const appearance = appearanceStr?.toLowerCase();
+        if (appearance === "filled-alternative" || appearance === "outline" || appearance === "subtle") {
+            return appearance;
+        }
+        return "filled";
+    }
+
     public updateView(context: ComponentFramework.Context<IInputs>): React.ReactElement {
         const title = context.parameters.Title?.raw ?? "Card Title";
         const subtitle = context.parameters.Subtitle?.raw ?? undefined;
-        const imageUrl = context.parameters.ImageUrl?.raw ?? undefined;
+        const bodyContent = context.parameters.BodyContent?.raw ?? undefined;
+        const image = context.parameters.Image?.raw ?? undefined;
         const size = this.parseSize(context.parameters.Size?.raw);
         const orientation = this.parseOrientation(context.parameters.Orientation?.raw);
+        const appearance = this.parseAppearance(context.parameters.Appearance?.raw);
         const selectable = context.parameters.Selectable?.raw ?? false;
+        const floatingAction = context.parameters.FloatingAction?.raw ?? false;
+        const actionButtonText = context.parameters.ActionButtonText?.raw ?? undefined;
 
         return React.createElement(FluentCardComponent, {
             title: title,
             subtitle: subtitle,
-            imageUrl: imageUrl,
+            bodyContent: bodyContent,
+            image: image,
             size: size,
             orientation: orientation,
+            appearance: appearance,
             selectable: selectable,
+            floatingAction: floatingAction,
+            actionButtonText: actionButtonText,
             selected: this.selected,
             onSelect: this.handleSelect,
             onClick: this.handleClick,
+            onActionClick: this.handleActionClick,
         });
     }
 
@@ -70,6 +93,7 @@ export class FluentCard implements ComponentFramework.ReactControl<IInputs, IOut
         return {
             Selected: this.selected,
             Clicked: this.clicked,
+            ActionClicked: this.actionClicked,
         };
     }
 
