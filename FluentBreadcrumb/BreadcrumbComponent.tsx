@@ -7,16 +7,12 @@ import {
     FluentProvider,
     webLightTheme,
     makeStyles,
-    Overflow,
-    OverflowItem,
     Menu,
     MenuTrigger,
     MenuPopover,
     MenuList,
     MenuItem,
     Button,
-    useIsOverflowItemVisible,
-    useOverflowMenu,
 } from "@fluentui/react-components";
 import { MoreHorizontalRegular, HomeRegular, FolderRegular, DocumentRegular } from "@fluentui/react-icons";
 
@@ -39,14 +35,13 @@ const useStyles = makeStyles({
     },
 });
 
-// Icon map for commonly used breadcrumb icons - keeps bundle small
+// Icon map for commonly used breadcrumb icons
 const iconMap: Record<string, React.FC> = {
     HomeRegular: HomeRegular,
     FolderRegular: FolderRegular,
     DocumentRegular: DocumentRegular,
 };
 
-// Helper to resolve icons from the limited set
 const resolveIcon = (iconName?: string): React.JSX.Element | undefined => {
     if (!iconName) return undefined;
     const IconComponent = iconMap[iconName];
@@ -56,120 +51,108 @@ const resolveIcon = (iconName?: string): React.JSX.Element | undefined => {
     return undefined;
 };
 
-// Component for individual breadcrumb items that can overflow
-interface OverflowBreadcrumbItemProps {
-    item: BreadcrumbItemData;
-    isLast: boolean;
-    onItemSelect: (key: string) => void;
-}
-
-const OverflowBreadcrumbItem: React.FC<OverflowBreadcrumbItemProps> = ({ item, isLast, onItemSelect }) => {
-    const Icon = resolveIcon(item.icon);
-    return (
-        <OverflowItem id={item.key} priority={isLast ? 1000 : undefined}>
-            <span style={{ display: "inline-flex", alignItems: "center" }}>
-                <BreadcrumbItem>
-                    <BreadcrumbButton
-                        icon={Icon}
-                        onClick={() => onItemSelect(item.key)}
-                        current={isLast}
-                    >
-                        {item.name}
-                    </BreadcrumbButton>
-                </BreadcrumbItem>
-                {!isLast && <BreadcrumbDivider />}
-            </span>
-        </OverflowItem>
-    );
-};
-
-// Menu item for overflowed breadcrumb items
-interface OverflowMenuItemProps {
-    itemKey: string;
-    name: string;
-    onItemSelect: (key: string) => void;
-}
-
-const OverflowMenuItem: React.FC<OverflowMenuItemProps> = ({ itemKey, name, onItemSelect }) => {
-    const isVisible = useIsOverflowItemVisible(itemKey);
-
-    if (isVisible) {
-        return null;
-    }
-
-    return (
-        <MenuItem onClick={() => onItemSelect(itemKey)}>
-            {name}
-        </MenuItem>
-    );
-};
-
-// Overflow menu trigger
-interface OverflowMenuProps {
-    items: BreadcrumbItemData[];
-    onItemSelect: (key: string) => void;
-}
-
-const OverflowMenu: React.FC<OverflowMenuProps> = ({ items, onItemSelect }) => {
-    const { ref, isOverflowing } = useOverflowMenu<HTMLButtonElement>();
-
-    if (!isOverflowing) {
-        return null;
-    }
-
-    return (
-        <span style={{ display: "inline-flex", alignItems: "center" }}>
-            <BreadcrumbItem>
-                <Menu>
-                    <MenuTrigger>
-                        <Button
-                            ref={ref}
-                            appearance="subtle"
-                            icon={<MoreHorizontalRegular />}
-                            aria-label="More breadcrumb items"
-                        />
-                    </MenuTrigger>
-                    <MenuPopover>
-                        <MenuList>
-                            {items.map((item) => (
-                                <OverflowMenuItem
-                                    key={item.key}
-                                    itemKey={item.key}
-                                    name={item.name}
-                                    onItemSelect={onItemSelect}
-                                />
-                            ))}
-                        </MenuList>
-                    </MenuPopover>
-                </Menu>
-            </BreadcrumbItem>
-            <BreadcrumbDivider />
-        </span>
-    );
-};
+// Calculate how many items fit based on container width
+// For simplicity, we'll use a fixed approach: show first, "...", last 2 when > 4 items
+const MAX_VISIBLE_ITEMS = 4;
 
 export const FluentBreadcrumbComponent: React.FC<FluentBreadcrumbProps> = (props) => {
     const { items, onItemSelect } = props;
     const styles = useStyles();
 
+    // Determine if we need overflow
+    const needsOverflow = items.length > MAX_VISIBLE_ITEMS;
+
+    // If we need overflow: show first item, "...", then last 2 items
+    // Otherwise show all items
+    const visibleItems = React.useMemo(() => {
+        if (!needsOverflow) {
+            return items;
+        }
+        // Show: first, [overflow menu], last 2
+        return [
+            items[0],
+            ...items.slice(-2)
+        ];
+    }, [items, needsOverflow]);
+
+    const overflowItems = React.useMemo(() => {
+        if (!needsOverflow) {
+            return [];
+        }
+        // Items between first and last 2
+        return items.slice(1, -2);
+    }, [items, needsOverflow]);
+
     return (
         <FluentProvider theme={webLightTheme} style={{ background: "transparent", width: "100%" }}>
-            <Overflow>
-                <Breadcrumb aria-label="Breadcrumb" className={styles.root}>
-                    <OverflowMenu items={items} onItemSelect={onItemSelect} />
-                    {items.map((item, index) => {
-                        const isLast = index === items.length - 1;
-                        return (
-                            <OverflowBreadcrumbItem
-                                key={item.key}
-                                item={item}
-                                isLast={isLast}
-                                onItemSelect={onItemSelect}
-                            />
-                        );
-                    })}
-                </Breadcrumb>
-            </Overflow>
+            <Breadcrumb aria-label="Breadcrumb" className={styles.root}>
+                {/* First item */}
+                {visibleItems.length > 0 && (
+                    <>
+                        <BreadcrumbItem>
+                            <BreadcrumbButton
+                                icon={resolveIcon(visibleItems[0].icon)}
+                                onClick={() => onItemSelect(visibleItems[0].key)}
+                            >
+                                {visibleItems[0].name}
+                            </BreadcrumbButton>
+                        </BreadcrumbItem>
+                        <BreadcrumbDivider />
+                    </>
+                )}
+
+                {/* Overflow menu (if needed) */}
+                {needsOverflow && overflowItems.length > 0 && (
+                    <>
+                        <BreadcrumbItem>
+                            <Menu>
+                                <MenuTrigger>
+                                    <Button
+                                        appearance="subtle"
+                                        icon={<MoreHorizontalRegular />}
+                                        aria-label="More breadcrumb items"
+                                        size="small"
+                                    />
+                                </MenuTrigger>
+                                <MenuPopover>
+                                    <MenuList>
+                                        {overflowItems.map((item) => (
+                                            <MenuItem
+                                                key={item.key}
+                                                onClick={() => onItemSelect(item.key)}
+                                            >
+                                                {item.name}
+                                            </MenuItem>
+                                        ))}
+                                    </MenuList>
+                                </MenuPopover>
+                            </Menu>
+                        </BreadcrumbItem>
+                        <BreadcrumbDivider />
+                    </>
+                )}
+
+                {/* Remaining visible items (skip first since already rendered) */}
+                {visibleItems.slice(1).map((item, index) => {
+                    const isLast = index === visibleItems.length - 2; // -2 because we sliced off first
+                    const Icon = resolveIcon(item.icon);
+
+                    return (
+                        <React.Fragment key={item.key}>
+                            <BreadcrumbItem>
+                                <BreadcrumbButton
+                                    icon={Icon}
+                                    onClick={() => onItemSelect(item.key)}
+                                    current={isLast}
+                                >
+                                    {item.name}
+                                </BreadcrumbButton>
+                            </BreadcrumbItem>
+                            {!isLast && <BreadcrumbDivider />}
+                        </React.Fragment>
+                    );
+                })}
+            </Breadcrumb>
         </FluentProvider>
     );
 };

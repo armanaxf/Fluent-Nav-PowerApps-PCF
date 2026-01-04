@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="FluentMessageBar" constructor="FluentMessageBar" version="0.0.1" display-name-key="FluentMessageBar" description-key="Fluent UI v9 MessageBar Component for Canvas Apps" control-type="virtual">
+  <control namespace="FluentMessageBar" constructor="FluentMessageBar" version="0.0.2" display-name-key="FluentMessageBar" description-key="Fluent UI v9 MessageBar Component for Canvas Apps" control-type="virtual">
     <external-service-usage enabled="false">
     </external-service-usage>
     
@@ -15,6 +15,7 @@
     <property name="Title" display-name-key="Title" description-key="Optional title displayed above the message" of-type="SingleLine.Text" usage="input" required="false" />
     <property name="Dismissible" display-name-key="Dismissible" description-key="Whether the message bar can be dismissed by the user" of-type="TwoOptions" usage="input" required="false" />
     <property name="ActionText" display-name-key="Action Text" description-key="Optional text for an action button" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="ResetDismiss" display-name-key="Reset Dismiss" description-key="Toggle this to reset the dismissed state and show the message bar again" of-type="TwoOptions" usage="input" required="false" />
     
     <!-- Output Properties -->
     <property name="IsDismissed" display-name-key="Is Dismissed" description-key="Triggers when the message bar is dismissed (toggles true/false)" of-type="TwoOptions" usage="output" />

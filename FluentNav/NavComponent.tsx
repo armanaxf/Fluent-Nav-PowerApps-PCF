@@ -70,19 +70,28 @@ const useStyles = makeStyles({
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'row',
-        position: 'relative',
+        backgroundColor: tokens.colorNeutralBackground2,
+    },
+    hamburgerContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '48px',
+        minWidth: '48px',
+        height: '100%',
+        backgroundColor: tokens.colorNeutralBackground2,
+        borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
     },
     hamburgerButton: {
-        position: 'absolute',
-        top: '8px',
-        left: '8px',
-        zIndex: 100,
-        minWidth: '32px',
-        minHeight: '32px',
+        margin: '8px',
+    },
+    navDrawerWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '100%',
+        flexGrow: 1,
     },
     navDrawer: {
         height: '100%',
-        marginTop: '48px', // Space for hamburger
     },
     headerImage: {
         width: '32px',
@@ -140,7 +149,7 @@ export interface IFluentNavProps {
     drawerType?: 'inline' | 'overlay';
 }
 
-// Icon mapping - extended with more icons from the example
+// Icon mapping
 const iconMap: Record<string, React.FC<{ className?: string }>> = {
     Home: bundleIcon(HomeFilled, HomeRegular),
     Settings: bundleIcon(SettingsFilled, SettingsRegular),
@@ -168,7 +177,6 @@ const iconMap: Record<string, React.FC<{ className?: string }>> = {
     Reports: bundleIcon(DocumentBulletListMultiple20Filled, DocumentBulletListMultiple20Regular),
 };
 
-// Helper to get icon component by name
 const getIcon = (iconName?: string): React.FC<{ className?: string }> | undefined => {
     if (!iconName) return undefined;
     return iconMap[iconName] ?? undefined;
@@ -183,12 +191,10 @@ const buildNavTree = (items: NavItemData[]): NavTreeItem[] => {
     const itemMap = new Map<string, NavTreeItem>();
     const rootItems: NavTreeItem[] = [];
 
-    // First pass: create all items with empty children arrays
     items.forEach((item) => {
         itemMap.set(item.key, { ...item, children: [] });
     });
 
-    // Second pass: build the tree
     items.forEach((item) => {
         const treeItem = itemMap.get(item.key)!;
         if (item.parentKey && itemMap.has(item.parentKey)) {
@@ -204,12 +210,10 @@ const buildNavTree = (items: NavItemData[]): NavTreeItem[] => {
 // Render nav items recursively
 const renderNavItems = (items: NavTreeItem[]): React.ReactNode[] => {
     return items.map((item) => {
-        // Handle section headers
         if (item.isSectionHeader) {
             return <NavSectionHeader key={item.key}>{item.name}</NavSectionHeader>;
         }
 
-        // Handle dividers
         if (item.isDivider) {
             return <NavDivider key={item.key} />;
         }
@@ -217,7 +221,6 @@ const renderNavItems = (items: NavTreeItem[]): React.ReactNode[] => {
         const IconComponent = getIcon(item.icon);
 
         if (item.children.length > 0) {
-            // Item with children - render as NavCategory
             return (
                 <NavCategory key={item.key} value={item.key}>
                     <NavCategoryItem icon={IconComponent ? <IconComponent /> : undefined}>
@@ -226,7 +229,6 @@ const renderNavItems = (items: NavTreeItem[]): React.ReactNode[] => {
                     <NavSubItemGroup>
                         {item.children.map((child) => {
                             if (child.children.length > 0) {
-                                // Nested category (Fluent Nav only supports one level of nesting officially)
                                 return renderNavItems([child]);
                             }
                             return (
@@ -240,7 +242,6 @@ const renderNavItems = (items: NavTreeItem[]): React.ReactNode[] => {
             );
         }
 
-        // Leaf item
         return (
             <NavItem
                 key={item.key}
@@ -270,24 +271,20 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
 
     const styles = useStyles();
 
-    // Internal open state (can be controlled or uncontrolled)
     const [internalIsOpen, setInternalIsOpen] = React.useState(true);
     const isOpen = controlledIsOpen ?? internalIsOpen;
 
-    // Selection state
     const [internalSelectedKey, setInternalSelectedKey] = React.useState<string>(
         defaultSelectedKey ?? (items.length > 0 ? items[0].key : '')
     );
     const currentSelectedKey = selectedKey ?? internalSelectedKey;
 
-    // Handle hamburger toggle
     const handleToggle = () => {
         const newIsOpen = !isOpen;
         setInternalIsOpen(newIsOpen);
         onOpenChange?.(newIsOpen);
     };
 
-    // Type the handler to match NavDrawerProps['onNavItemSelect']
     const handleNavItemSelect: NavDrawerProps['onNavItemSelect'] = (
         _event,
         data
@@ -298,63 +295,61 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
     };
 
     const navTree = React.useMemo(() => buildNavTree(items), [items]);
-
-    // Get header icon component
     const HeaderIconComponent = headerIcon ? getIcon(headerIcon) : undefined;
-
-    // Determine theme from context (PowerApps doesn't expose theme directly, so we default to light)
     const theme = webLightTheme;
 
     return (
         <FluentProvider theme={theme}>
             <div className={styles.root}>
-                {/* Hamburger button - always visible */}
-                <Tooltip content={isOpen ? "Collapse navigation" : "Expand navigation"} relationship="label">
-                    <Button
-                        appearance="subtle"
-                        icon={<NavigationRegular />}
-                        onClick={handleToggle}
-                        className={styles.hamburgerButton}
-                        aria-label={isOpen ? "Collapse navigation" : "Expand navigation"}
-                    />
-                </Tooltip>
+                {/* Hamburger column - always visible */}
+                <div className={styles.hamburgerContainer}>
+                    <Tooltip content={isOpen ? "Collapse navigation" : "Expand navigation"} relationship="label">
+                        <Button
+                            appearance="subtle"
+                            icon={<NavigationRegular />}
+                            onClick={handleToggle}
+                            className={styles.hamburgerButton}
+                            aria-label={isOpen ? "Collapse navigation" : "Expand navigation"}
+                        />
+                    </Tooltip>
+                </div>
 
-                <NavDrawer
-                    open={isOpen}
-                    type={drawerType}
-                    selectedValue={currentSelectedKey}
-                    defaultSelectedValue={defaultSelectedKey}
-                    onNavItemSelect={handleNavItemSelect}
-                    className={styles.navDrawer}
-                    multiple
-                >
-                    <NavDrawerBody>
-                        {/* Header/App Item */}
-                        {headerTitle && (
-                            <AppItem
-                                icon={
-                                    headerImageUrl ? (
-                                        <HeaderImage
-                                            src={headerImageUrl}
-                                            fallbackIcon={HeaderIconComponent}
-                                        />
-                                    ) : HeaderIconComponent ? (
-                                        <HeaderIconComponent />
-                                    ) : (
-                                        <PersonCircle32Regular />
-                                    )
-                                }
-                                onClick={onHeaderSelect}
-                                style={{ cursor: onHeaderSelect ? 'pointer' : 'default' }}
-                            >
-                                {headerTitle}
-                            </AppItem>
-                        )}
-
-                        {/* Navigation Items */}
-                        {renderNavItems(navTree)}
-                    </NavDrawerBody>
-                </NavDrawer>
+                {/* NavDrawer - only visible when open */}
+                {isOpen && (
+                    <NavDrawer
+                        open={true}
+                        type={drawerType}
+                        selectedValue={currentSelectedKey}
+                        defaultSelectedValue={defaultSelectedKey}
+                        onNavItemSelect={handleNavItemSelect}
+                        className={styles.navDrawer}
+                        multiple
+                    >
+                        <NavDrawerBody>
+                            {headerTitle && (
+                                <AppItem
+                                    icon={
+                                        headerImageUrl ? (
+                                            <HeaderImage
+                                                src={headerImageUrl}
+                                                fallbackIcon={HeaderIconComponent}
+                                            />
+                                        ) : HeaderIconComponent ? (
+                                            <HeaderIconComponent />
+                                        ) : (
+                                            <PersonCircle32Regular />
+                                        )
+                                    }
+                                    onClick={onHeaderSelect}
+                                    style={{ cursor: onHeaderSelect ? 'pointer' : 'default' }}
+                                >
+                                    {headerTitle}
+                                </AppItem>
+                            )}
+                            {renderNavItems(navTree)}
+                        </NavDrawerBody>
+                    </NavDrawer>
+                )}
             </div>
         </FluentProvider>
     );

@@ -17,6 +17,7 @@ export interface FluentMessageBarComponentProps {
     title?: string;
     dismissible?: boolean;
     actionText?: string;
+    isDismissed: boolean;
     onDismiss?: () => void;
     onAction?: () => void;
 }
@@ -28,16 +29,12 @@ export const FluentMessageBarComponent: React.FC<FluentMessageBarComponentProps>
         title,
         dismissible,
         actionText,
+        isDismissed,
         onDismiss,
         onAction,
     } = props;
 
-    // Note: dismissed state resets when component re-mounts
-    // Power Apps native Visible property controls mount/unmount
-    const [dismissed, setDismissed] = React.useState(false);
-
     const handleDismiss = React.useCallback(() => {
-        setDismissed(true);
         onDismiss?.();
     }, [onDismiss]);
 
@@ -45,7 +42,6 @@ export const FluentMessageBarComponent: React.FC<FluentMessageBarComponentProps>
         onAction?.();
     }, [onAction]);
 
-    // Map string intent to Fluent UI MessageBarIntent
     const getIntent = (): MessageBarIntent => {
         switch (intent) {
             case "success":
@@ -60,7 +56,8 @@ export const FluentMessageBarComponent: React.FC<FluentMessageBarComponentProps>
         }
     };
 
-    if (dismissed) {
+    // If dismissed, don't render anything
+    if (isDismissed) {
         return null;
     }
 
