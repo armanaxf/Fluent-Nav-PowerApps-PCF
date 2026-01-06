@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="FluentCard" constructor="FluentCard" version="1.4.2" display-name-key="FluentCard" description-key="Fluent UI v9 Card Component for Canvas Apps" control-type="virtual">
+  <control namespace="FluentCard" constructor="FluentCard" version="1.4.3" display-name-key="FluentCard" description-key="Fluent UI v9 Card Component for Canvas Apps" control-type="virtual">
     <external-service-usage enabled="false">
     </external-service-usage>
     

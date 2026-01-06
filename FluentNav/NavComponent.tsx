@@ -63,47 +63,55 @@ import {
     Navigation20Regular,
 } from '@fluentui/react-icons';
 
+// Drawer width when expanded
+const DRAWER_WIDTH = 280;
+const COLLAPSED_WIDTH = 48;
+
 // Styles
 const useStyles = makeStyles({
     root: {
-        width: '100%',
         height: '100%',
         overflow: 'hidden',
         display: 'flex',
-        flexDirection: 'row',
-        backgroundColor: tokens.colorNeutralBackground2,
-    },
-    // Persistent rail that contains hamburger - always visible
-    persistentRail: {
-        display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        width: '48px',
-        minWidth: '48px',
-        height: '100%',
         backgroundColor: tokens.colorNeutralBackground2,
-        paddingTop: '8px',
+        transition: 'width 0.2s ease-in-out',
+    },
+    rootExpanded: {
+        width: `${DRAWER_WIDTH}px`,
+    },
+    rootCollapsed: {
+        width: `${COLLAPSED_WIDTH}px`,
+    },
+    // Top toggle area - contains hamburger, always visible
+    toggleArea: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '8px',
         boxSizing: 'border-box',
+        backgroundColor: tokens.colorNeutralBackground2,
     },
     hamburgerButton: {
         minWidth: '32px',
         minHeight: '32px',
     },
-    // Nav drawer container - slides in/out
-    navDrawerContainer: {
-        height: '100%',
+    // Drawer container - expands/collapses
+    drawerContainer: {
+        flex: 1,
         overflow: 'hidden',
-        transition: 'width 0.2s ease-in-out',
+        transition: 'opacity 0.2s ease-in-out',
     },
-    navDrawerOpen: {
-        width: '280px',
+    drawerContainerOpen: {
+        opacity: 1,
     },
-    navDrawerClosed: {
-        width: '0px',
+    drawerContainerClosed: {
+        opacity: 0,
+        height: 0,
+        overflow: 'hidden',
     },
     navDrawer: {
         height: '100%',
-        width: '280px',
+        width: '100%',
     },
     headerImage: {
         width: '32px',
@@ -314,9 +322,12 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
 
     return (
         <FluentProvider theme={appliedTheme}>
-            <div className={styles.root}>
-                {/* Persistent Rail - ALWAYS visible with hamburger at top */}
-                <div className={styles.persistentRail}>
+            <div className={mergeClasses(
+                styles.root,
+                isOpen ? styles.rootExpanded : styles.rootCollapsed
+            )}>
+                {/* Top Toggle Area - ALWAYS visible with hamburger */}
+                <div className={styles.toggleArea}>
                     <Tooltip content={isOpen ? "Collapse navigation" : "Expand navigation"} relationship="label">
                         <Button
                             appearance="subtle"
@@ -328,44 +339,46 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
                     </Tooltip>
                 </div>
 
-                {/* NavDrawer Container - slides in/out */}
+                {/* Drawer Container - expands/collapses vertically */}
                 <div className={mergeClasses(
-                    styles.navDrawerContainer,
-                    isOpen ? styles.navDrawerOpen : styles.navDrawerClosed
+                    styles.drawerContainer,
+                    isOpen ? styles.drawerContainerOpen : styles.drawerContainerClosed
                 )}>
-                    <NavDrawer
-                        open={true} // Always "open" internally, we control visibility via container width
-                        type={drawerType}
-                        selectedValue={currentSelectedKey}
-                        defaultSelectedValue={defaultSelectedKey}
-                        onNavItemSelect={handleNavItemSelect}
-                        className={styles.navDrawer}
-                        multiple
-                    >
-                        <NavDrawerBody>
-                            {headerTitle && (
-                                <AppItem
-                                    icon={
-                                        headerImageUrl ? (
-                                            <HeaderImage
-                                                src={headerImageUrl}
-                                                fallbackIcon={HeaderIconComponent}
-                                            />
-                                        ) : HeaderIconComponent ? (
-                                            <HeaderIconComponent />
-                                        ) : (
-                                            <PersonCircle32Regular />
-                                        )
-                                    }
-                                    onClick={onHeaderSelect}
-                                    style={{ cursor: onHeaderSelect ? 'pointer' : 'default' }}
-                                >
-                                    {headerTitle}
-                                </AppItem>
-                            )}
-                            {renderNavItems(navTree)}
-                        </NavDrawerBody>
-                    </NavDrawer>
+                    {isOpen && (
+                        <NavDrawer
+                            open={true}
+                            type={drawerType}
+                            selectedValue={currentSelectedKey}
+                            defaultSelectedValue={defaultSelectedKey}
+                            onNavItemSelect={handleNavItemSelect}
+                            className={styles.navDrawer}
+                            multiple
+                        >
+                            <NavDrawerBody>
+                                {headerTitle && (
+                                    <AppItem
+                                        icon={
+                                            headerImageUrl ? (
+                                                <HeaderImage
+                                                    src={headerImageUrl}
+                                                    fallbackIcon={HeaderIconComponent}
+                                                />
+                                            ) : HeaderIconComponent ? (
+                                                <HeaderIconComponent />
+                                            ) : (
+                                                <PersonCircle32Regular />
+                                            )
+                                        }
+                                        onClick={onHeaderSelect}
+                                        style={{ cursor: onHeaderSelect ? 'pointer' : 'default' }}
+                                    >
+                                        {headerTitle}
+                                    </AppItem>
+                                )}
+                                {renderNavItems(navTree)}
+                            </NavDrawerBody>
+                        </NavDrawer>
+                    )}
                 </div>
             </div>
         </FluentProvider>

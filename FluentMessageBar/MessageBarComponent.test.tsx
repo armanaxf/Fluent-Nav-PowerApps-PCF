@@ -34,10 +34,13 @@ describe('FluentMessageBarComponent', () => {
         title: 'Test title',
         dismissible: true,
         actionText: 'Action',
-        isDismissed: false,
         onDismiss: jest.fn(),
         onAction: jest.fn(),
     };
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
     it('renders message and title correctly', () => {
         render(<FluentMessageBarComponent {...defaultProps} />);
@@ -64,15 +67,17 @@ describe('FluentMessageBarComponent', () => {
         expect(defaultProps.onAction).toHaveBeenCalledTimes(1);
     });
 
-    it('renders nothing when isDismissed is true', () => {
+    it('always renders (no internal dismiss state)', () => {
         const { container } = render(
-            <FluentMessageBarComponent {...defaultProps} isDismissed={true} />
+            <FluentMessageBarComponent {...defaultProps} />
         );
 
-        expect(container.firstChild).toBeNull();
+        // Component should always be visible - host app controls visibility
+        expect(container.firstChild).not.toBeNull();
+        expect(screen.getByText('Test message')).toBeInTheDocument();
     });
 
-    it('applies correct intent (checking by presence, though specific styles might be hard to test in JSDOM)', () => {
+    it('applies correct intent', () => {
         const { rerender } = render(
             <FluentMessageBarComponent {...defaultProps} intent="success" />
         );

@@ -18,7 +18,6 @@ export interface FluentMessageBarComponentProps {
     title?: string;
     dismissible?: boolean;
     actionText?: string;
-    isDismissed: boolean;
     onDismiss?: () => void;
     onAction?: () => void;
     theme?: Theme;
@@ -31,13 +30,13 @@ export const FluentMessageBarComponent: React.FC<FluentMessageBarComponentProps>
         title,
         dismissible,
         actionText,
-        isDismissed,
         onDismiss,
         onAction,
         theme,
     } = props;
 
     const handleDismiss = React.useCallback(() => {
+        // Just fire the event - let host app handle visibility
         onDismiss?.();
     }, [onDismiss]);
 
@@ -58,11 +57,6 @@ export const FluentMessageBarComponent: React.FC<FluentMessageBarComponentProps>
                 return "info";
         }
     };
-
-    // If dismissed, don't render anything
-    if (isDismissed) {
-        return null;
-    }
 
     const appliedTheme = theme ?? webLightTheme;
 

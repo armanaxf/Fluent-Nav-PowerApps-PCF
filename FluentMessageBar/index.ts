@@ -4,7 +4,6 @@ import * as React from "react";
 
 export class FluentMessageBar implements ComponentFramework.ReactControl<IInputs, IOutputs> {
     private notifyOutputChanged: () => void;
-    private isDismissed = false;
     private actionClicked = false;
     private context: ComponentFramework.Context<IInputs>;
 
@@ -22,9 +21,8 @@ export class FluentMessageBar implements ComponentFramework.ReactControl<IInputs
     }
 
     private handleDismiss = (): void => {
-        this.isDismissed = true;
+        // Just fire the OnDismiss event - let host app handle visibility
         this.notifyOutputChanged();
-        // Fire the OnDismiss event
         if (this.context.events?.OnDismiss) {
             this.context.events.OnDismiss();
         }
@@ -33,7 +31,6 @@ export class FluentMessageBar implements ComponentFramework.ReactControl<IInputs
     private handleAction = (): void => {
         this.actionClicked = !this.actionClicked;
         this.notifyOutputChanged();
-        // Fire the OnAction event
         if (this.context.events?.OnAction) {
             this.context.events.OnAction();
         }
@@ -66,7 +63,6 @@ export class FluentMessageBar implements ComponentFramework.ReactControl<IInputs
             title: title,
             dismissible: dismissible,
             actionText: actionText,
-            isDismissed: this.isDismissed,
             onDismiss: this.handleDismiss,
             onAction: this.handleAction,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -76,7 +72,6 @@ export class FluentMessageBar implements ComponentFramework.ReactControl<IInputs
 
     public getOutputs(): IOutputs {
         return {
-            IsDismissed: this.isDismissed,
             ActionClicked: this.actionClicked,
         };
     }

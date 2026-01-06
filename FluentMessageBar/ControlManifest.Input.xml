@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="FluentMessageBar" constructor="FluentMessageBar" version="1.4.2" display-name-key="FluentMessageBar" description-key="Fluent UI v9 MessageBar Component for Canvas Apps" control-type="virtual">
+  <control namespace="FluentMessageBar" constructor="FluentMessageBar" version="1.4.3" display-name-key="FluentMessageBar" description-key="Fluent UI v9 MessageBar Component for Canvas Apps" control-type="virtual">
     <external-service-usage enabled="false">
     </external-service-usage>
     
@@ -17,7 +17,6 @@
     <property name="ActionText" display-name-key="Action Text" description-key="Optional text for an action button" of-type="SingleLine.Text" usage="input" required="false" />
     
     <!-- Output Properties -->
-    <property name="IsDismissed" display-name-key="Is Dismissed" description-key="Whether the message bar has been dismissed" of-type="TwoOptions" usage="output" />
     <property name="ActionClicked" display-name-key="Action Clicked" description-key="Triggers when the action button is clicked (toggles true/false)" of-type="TwoOptions" usage="output" />
     
     <!-- Events -->
