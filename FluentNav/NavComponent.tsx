@@ -20,45 +20,20 @@ import {
     Hamburger,
     NavDrawerProps,
 } from '@fluentui/react-nav';
+// Optimized: Import only essential icons to reduce bundle size
 import {
     bundleIcon,
     HomeFilled,
     HomeRegular,
     SettingsFilled,
     SettingsRegular,
-    PersonFilled,
-    PersonRegular,
-    CalendarFilled,
-    CalendarRegular,
-    MailFilled,
-    MailRegular,
     DocumentFilled,
     DocumentRegular,
-    ChatFilled,
-    ChatRegular,
-    PeopleFilled,
-    PeopleRegular,
-    SearchFilled,
-    SearchRegular,
-    AppsFilled,
-    AppsRegular,
     GridFilled,
     GridRegular,
     PersonCircle32Regular,
-    Board20Filled,
-    Board20Regular,
-    MegaphoneLoud20Filled,
-    MegaphoneLoud20Regular,
-    HeartPulse20Filled,
-    HeartPulse20Regular,
-    BoxMultiple20Filled,
-    BoxMultiple20Regular,
-    NotePin20Filled,
-    NotePin20Regular,
-    DataArea20Filled,
-    DataArea20Regular,
-    DocumentBulletListMultiple20Filled,
-    DocumentBulletListMultiple20Regular,
+    AppsFilled,
+    AppsRegular,
 } from '@fluentui/react-icons';
 
 // Styles
@@ -129,32 +104,15 @@ export interface IFluentNavProps {
     theme?: typeof webLightTheme;
 }
 
-// Icon mapping
+// Optimized icon mapping - reduced set for smaller bundle
 const iconMap: Record<string, React.FC<{ className?: string }>> = {
     Home: bundleIcon(HomeFilled, HomeRegular),
     Settings: bundleIcon(SettingsFilled, SettingsRegular),
-    Person: bundleIcon(PersonFilled, PersonRegular),
-    Calendar: bundleIcon(CalendarFilled, CalendarRegular),
-    Mail: bundleIcon(MailFilled, MailRegular),
     Document: bundleIcon(DocumentFilled, DocumentRegular),
-    Chat: bundleIcon(ChatFilled, ChatRegular),
-    People: bundleIcon(PeopleFilled, PeopleRegular),
-    Search: bundleIcon(SearchFilled, SearchRegular),
-    Apps: bundleIcon(AppsFilled, AppsRegular),
+    Documents: bundleIcon(DocumentFilled, DocumentRegular),
     Grid: bundleIcon(GridFilled, GridRegular),
-    Dashboard: bundleIcon(Board20Filled, Board20Regular),
-    Board: bundleIcon(Board20Filled, Board20Regular),
-    Announcements: bundleIcon(MegaphoneLoud20Filled, MegaphoneLoud20Regular),
-    Megaphone: bundleIcon(MegaphoneLoud20Filled, MegaphoneLoud20Regular),
-    Health: bundleIcon(HeartPulse20Filled, HeartPulse20Regular),
-    HeartPulse: bundleIcon(HeartPulse20Filled, HeartPulse20Regular),
-    Training: bundleIcon(BoxMultiple20Filled, BoxMultiple20Regular),
-    BoxMultiple: bundleIcon(BoxMultiple20Filled, BoxMultiple20Regular),
-    JobPostings: bundleIcon(NotePin20Filled, NotePin20Regular),
-    NotePin: bundleIcon(NotePin20Filled, NotePin20Regular),
-    Analytics: bundleIcon(DataArea20Filled, DataArea20Regular),
-    DataArea: bundleIcon(DataArea20Filled, DataArea20Regular),
-    Reports: bundleIcon(DocumentBulletListMultiple20Filled, DocumentBulletListMultiple20Regular),
+    Dashboard: bundleIcon(GridFilled, GridRegular),
+    Apps: bundleIcon(AppsFilled, AppsRegular),
 };
 
 const getIcon = (iconName?: string): React.FC<{ className?: string }> | undefined => {
