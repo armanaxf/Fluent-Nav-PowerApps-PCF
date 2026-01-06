@@ -8,7 +8,7 @@ import typescriptEslint from "typescript-eslint";
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
-    ignores: ["**/generated", "**/out/**", "**/bundle.js", "**/*.bundle.js"],
+    ignores: ["**/generated", "**/out/**", "**/bundle.js", "**/*.bundle.js", "**/*.test.ts", "**/*.test.tsx", "jest.config.js", "jest.setup.ts"],
   },
   eslintjs.configs.recommended,
   ...typescriptEslint.configs.recommendedTypeChecked,

@@ -6,6 +6,7 @@ import {
     makeStyles,
     tokens,
     Button,
+    mergeClasses,
 } from '@fluentui/react-components';
 import {
     NavDrawer,
@@ -59,7 +60,7 @@ import {
     DataArea20Regular,
     DocumentBulletListMultiple20Filled,
     DocumentBulletListMultiple20Regular,
-    NavigationRegular,
+    Navigation20Regular,
 } from '@fluentui/react-icons';
 
 // Styles
@@ -72,26 +73,37 @@ const useStyles = makeStyles({
         flexDirection: 'row',
         backgroundColor: tokens.colorNeutralBackground2,
     },
-    hamburgerContainer: {
+    // Persistent rail that contains hamburger - always visible
+    persistentRail: {
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'center',
         width: '48px',
         minWidth: '48px',
         height: '100%',
         backgroundColor: tokens.colorNeutralBackground2,
-        borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
+        paddingTop: '8px',
+        boxSizing: 'border-box',
     },
     hamburgerButton: {
-        margin: '8px',
+        minWidth: '32px',
+        minHeight: '32px',
     },
-    navDrawerWrapper: {
-        display: 'flex',
-        flexDirection: 'row',
+    // Nav drawer container - slides in/out
+    navDrawerContainer: {
         height: '100%',
-        flexGrow: 1,
+        overflow: 'hidden',
+        transition: 'width 0.2s ease-in-out',
+    },
+    navDrawerOpen: {
+        width: '280px',
+    },
+    navDrawerClosed: {
+        width: '0px',
     },
     navDrawer: {
         height: '100%',
+        width: '280px',
     },
     headerImage: {
         width: '32px',
@@ -147,6 +159,7 @@ export interface IFluentNavProps {
     headerImageUrl?: string;
     isOpen?: boolean;
     drawerType?: 'inline' | 'overlay';
+    theme?: typeof webLightTheme;
 }
 
 // Icon mapping
@@ -267,6 +280,7 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
         headerImageUrl,
         isOpen: controlledIsOpen,
         drawerType = 'inline',
+        theme,
     } = props;
 
     const styles = useStyles();
@@ -296,17 +310,17 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
 
     const navTree = React.useMemo(() => buildNavTree(items), [items]);
     const HeaderIconComponent = headerIcon ? getIcon(headerIcon) : undefined;
-    const theme = webLightTheme;
+    const appliedTheme = theme ?? webLightTheme;
 
     return (
-        <FluentProvider theme={theme}>
+        <FluentProvider theme={appliedTheme}>
             <div className={styles.root}>
-                {/* Hamburger column - always visible */}
-                <div className={styles.hamburgerContainer}>
+                {/* Persistent Rail - ALWAYS visible with hamburger at top */}
+                <div className={styles.persistentRail}>
                     <Tooltip content={isOpen ? "Collapse navigation" : "Expand navigation"} relationship="label">
                         <Button
                             appearance="subtle"
-                            icon={<NavigationRegular />}
+                            icon={<Navigation20Regular />}
                             onClick={handleToggle}
                             className={styles.hamburgerButton}
                             aria-label={isOpen ? "Collapse navigation" : "Expand navigation"}
@@ -314,10 +328,13 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
                     </Tooltip>
                 </div>
 
-                {/* NavDrawer - only visible when open */}
-                {isOpen && (
+                {/* NavDrawer Container - slides in/out */}
+                <div className={mergeClasses(
+                    styles.navDrawerContainer,
+                    isOpen ? styles.navDrawerOpen : styles.navDrawerClosed
+                )}>
                     <NavDrawer
-                        open={true}
+                        open={true} // Always "open" internally, we control visibility via container width
                         type={drawerType}
                         selectedValue={currentSelectedKey}
                         defaultSelectedValue={defaultSelectedKey}
@@ -349,7 +366,7 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
                             {renderNavItems(navTree)}
                         </NavDrawerBody>
                     </NavDrawer>
-                )}
+                </div>
             </div>
         </FluentProvider>
     );

@@ -13,6 +13,7 @@ import {
     MenuList,
     MenuItem,
     Button,
+    Theme,
 } from "@fluentui/react-components";
 import { MoreHorizontalRegular, HomeRegular, FolderRegular, DocumentRegular } from "@fluentui/react-icons";
 
@@ -25,6 +26,8 @@ export interface BreadcrumbItemData {
 export interface FluentBreadcrumbProps {
     items: BreadcrumbItemData[];
     onItemSelect: (key: string) => void;
+    containerWidth?: number;
+    theme?: Theme;
 }
 
 const useStyles = makeStyles({
@@ -51,40 +54,80 @@ const resolveIcon = (iconName?: string): React.JSX.Element | undefined => {
     return undefined;
 };
 
-// Calculate how many items fit based on container width
-// For simplicity, we'll use a fixed approach: show first, "...", last 2 when > 4 items
-const MAX_VISIBLE_ITEMS = 4;
+// Calculate max visible items based on container width
+// Average item width ~100px, overflow button ~40px, dividers ~20px
+const calculateMaxVisible = (containerWidth: number, totalItems: number): number => {
+    if (containerWidth <= 0) return 4; // Default
+
+    const avgItemWidth = 100;
+    const overflowButtonWidth = 50;
+    const dividerWidth = 20;
+
+    // If we have few items, show all
+    if (totalItems <= 2) return totalItems;
+
+    // Calculate how many items fit
+    // Formula: first + overflow + last + some middle = container width
+    // We always show first and last, so calculate remaining space for middle items
+    const availableWidth = containerWidth - overflowButtonWidth;
+    const itemsWithDividers = Math.floor(availableWidth / (avgItemWidth + dividerWidth));
+
+    // Minimum: show first and last (2 items)
+    // If we can fit more, show them
+    const maxItems = Math.max(2, Math.min(totalItems, itemsWithDividers));
+
+    return maxItems;
+};
 
 export const FluentBreadcrumbComponent: React.FC<FluentBreadcrumbProps> = (props) => {
-    const { items, onItemSelect } = props;
+    const { items, onItemSelect, containerWidth = 300, theme } = props;
     const styles = useStyles();
 
-    // Determine if we need overflow
-    const needsOverflow = items.length > MAX_VISIBLE_ITEMS;
+    // Calculate how many items to show based on width
+    // We'll use a simple heuristic: ~80px per item on average
+    const itemWidth = 80;
+    const overflowWidth = 50;
+    const maxVisibleItems = React.useMemo(() => {
+        if (items.length <= 2) return items.length;
 
-    // If we need overflow: show first item, "...", then last 2 items
-    // Otherwise show all items
+        // Always show at least first and last
+        const availableForMiddle = containerWidth - (itemWidth * 2) - overflowWidth;
+        const middleItemsCount = Math.max(0, Math.floor(availableForMiddle / itemWidth));
+
+        // Total = first + middle + last
+        // If middleItemsCount < items.length - 2, we need overflow
+        return Math.min(items.length, 2 + middleItemsCount);
+    }, [containerWidth, items.length]);
+
+    // Determine if we need overflow
+    const needsOverflow = items.length > maxVisibleItems;
+
+    // If we need overflow: show first item, "...", then last N items
     const visibleItems = React.useMemo(() => {
         if (!needsOverflow) {
             return items;
         }
-        // Show: first, [overflow menu], last 2
+        // How many items to show at the end (excluding first)?
+        const endItemsCount = Math.max(1, maxVisibleItems - 1);
         return [
             items[0],
-            ...items.slice(-2)
+            ...items.slice(-endItemsCount)
         ];
-    }, [items, needsOverflow]);
+    }, [items, needsOverflow, maxVisibleItems]);
 
     const overflowItems = React.useMemo(() => {
         if (!needsOverflow) {
             return [];
         }
-        // Items between first and last 2
-        return items.slice(1, -2);
-    }, [items, needsOverflow]);
+        const endItemsCount = Math.max(1, maxVisibleItems - 1);
+        // Items between first and the end items we show
+        return items.slice(1, items.length - endItemsCount);
+    }, [items, needsOverflow, maxVisibleItems]);
+
+    const appliedTheme = theme ?? webLightTheme;
 
     return (
-        <FluentProvider theme={webLightTheme} style={{ background: "transparent", width: "100%" }}>
+        <FluentProvider theme={appliedTheme} style={{ background: "transparent", width: "100%" }}>
             <Breadcrumb aria-label="Breadcrumb" className={styles.root}>
                 {/* First item */}
                 {visibleItems.length > 0 && (

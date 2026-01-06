@@ -12,6 +12,8 @@ import {
     tokens,
     FluentProvider,
     webLightTheme,
+    Theme,
+    mergeClasses,
 } from "@fluentui/react-components";
 
 export type CardAppearance = "filled" | "filled-alternative" | "outline" | "subtle";
@@ -29,9 +31,14 @@ export interface FluentCardProps {
     actionButtonText?: string;
     selected: boolean;
     onSelect: (selected: boolean) => void;
-    onClick: () => void;
+    onCardClick: () => void;
     onActionClick: () => void;
+    theme?: Theme;
 }
+
+// Placeholder SVG for when no image is provided
+const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect fill='%23f0f0f0' width='300' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-size='14' fill='%23999999'%3ENo Image%3C/text%3E%3C/svg%3E";
+const ERROR_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect fill='%23f5f5f5' width='300' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-size='14' fill='%23999999'%3EImage Error%3C/text%3E%3C/svg%3E";
 
 const useStyles = makeStyles({
     root: {
@@ -48,23 +55,53 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "row",
     },
+    // Size-based padding
+    cardSmall: {
+        padding: "8px",
+    },
+    cardMedium: {
+        padding: "12px",
+    },
+    cardLarge: {
+        padding: "16px",
+    },
     preview: {
         backgroundColor: tokens.colorNeutralBackground3,
+        minHeight: "120px",
     },
     previewImage: {
         width: "100%",
         height: "100%",
         objectFit: "cover",
+        minHeight: "120px",
     },
     horizontalPreview: {
         width: "140px",
         minWidth: "140px",
+        minHeight: "100%",
+    },
+    // Content container with proper gaps
+    contentContainer: {
+        display: "flex",
+        flexDirection: "column",
+        flexGrow: 1,
+        gap: "8px",
+        padding: "12px",
+    },
+    contentContainerSmall: {
+        gap: "4px",
+        padding: "8px",
+    },
+    contentContainerLarge: {
+        gap: "12px",
+        padding: "16px",
     },
     body: {
-        padding: "0 12px 12px 12px",
+        // Body text styling
     },
     footer: {
         marginTop: "auto",
+        paddingTop: "8px",
     },
     caption: {
         color: tokens.colorNeutralForeground3,
@@ -91,18 +128,19 @@ export const FluentCardComponent: React.FC<FluentCardProps> = (props) => {
         actionButtonText,
         selected,
         onSelect,
-        onClick,
+        onCardClick,
         onActionClick,
+        theme,
     } = props;
 
     const styles = useStyles();
 
     const handleClick = React.useCallback(() => {
-        onClick();
+        onCardClick();
         if (selectable && !floatingAction) {
             onSelect(!selected);
         }
-    }, [onClick, selectable, floatingAction, selected, onSelect]);
+    }, [onCardClick, selectable, floatingAction, selected, onSelect]);
 
     const handleActionClick = React.useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
@@ -115,17 +153,33 @@ export const FluentCardComponent: React.FC<FluentCardProps> = (props) => {
     }, [onSelect]);
 
     const isHorizontal = orientation === "horizontal";
+    const appliedTheme = theme ?? webLightTheme;
+
+    // Determine content container classes based on size
+    const contentContainerClass = mergeClasses(
+        styles.contentContainer,
+        size === "small" && styles.contentContainerSmall,
+        size === "large" && styles.contentContainerLarge
+    );
+
+    // Use provided image, or placeholder if none
+    const imageSrc = image ?? PLACEHOLDER_IMAGE;
 
     return (
-        <FluentProvider theme={webLightTheme} style={{ background: "transparent", width: "100%", height: "100%" }}>
+        <FluentProvider theme={appliedTheme} style={{ background: "transparent", width: "100%", height: "100%" }}>
             <div className={styles.root}>
                 <Card
                     appearance={appearance}
-                    className={isHorizontal ? styles.horizontalCard : styles.card}
+                    className={mergeClasses(
+                        isHorizontal ? styles.horizontalCard : styles.card,
+                        size === "small" && styles.cardSmall,
+                        size === "medium" && styles.cardMedium,
+                        size === "large" && styles.cardLarge
+                    )}
                     selected={selectable ? selected : undefined}
                     onSelectionChange={selectable && !floatingAction ? (_, data) => onSelect(data.selected) : undefined}
                     onClick={handleClick}
-                    size={size === "small" ? "small" : "medium"} // sizing in v9 is limited to small/medium
+                    size={size === "small" ? "small" : "medium"}
                 >
                     {selectable && floatingAction && (
                         <div className={styles.checkbox}>
@@ -137,26 +191,19 @@ export const FluentCardComponent: React.FC<FluentCardProps> = (props) => {
                         </div>
                     )}
 
-                    {image && (
-                        <CardPreview className={isHorizontal ? styles.horizontalPreview : styles.preview}>
-                            <img
-                                src={image}
-                                alt={title}
-                                className={styles.previewImage}
-                                onError={(e) => {
-                                    // Log error for debugging
-                                    console.warn('FluentCard: Image failed to load. Source:', image);
-                                    // Hide broken image
-                                    (e.target as HTMLImageElement).style.display = 'none';
-                                }}
-                                onLoad={() => {
-                                    console.log('FluentCard: Image loaded successfully');
-                                }}
-                            />
-                        </CardPreview>
-                    )}
+                    <CardPreview className={isHorizontal ? styles.horizontalPreview : styles.preview}>
+                        <img
+                            src={imageSrc}
+                            alt={title}
+                            className={styles.previewImage}
+                            onError={(e) => {
+                                // Use fallback placeholder on error
+                                (e.target as HTMLImageElement).src = ERROR_IMAGE;
+                            }}
+                        />
+                    </CardPreview>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                    <div className={contentContainerClass}>
                         <CardHeader
                             header={<Text weight="semibold">{title}</Text>}
                             description={subtitle ? <Text size={200} className={styles.caption}>{subtitle}</Text> : undefined}

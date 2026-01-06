@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="FluentCard" constructor="FluentCard" version="0.1.0" display-name-key="FluentCard" description-key="Fluent UI v9 Card Component for Canvas Apps" control-type="virtual">
+  <control namespace="FluentCard" constructor="FluentCard" version="1.4.2" display-name-key="FluentCard" description-key="Fluent UI v9 Card Component for Canvas Apps" control-type="virtual">
     <external-service-usage enabled="false">
     </external-service-usage>
     
@@ -10,7 +10,7 @@
     <property name="BodyContent" display-name-key="Body Content" description-key="Optional body text below the header" of-type="SingleLine.Text" usage="input" required="false" />
     <property name="Image" display-name-key="Image" description-key="Media reference, data URI, or URL for the card image" of-type="SingleLine.Text" usage="input" required="false" />
     
-    <property name="Size" display-name-key="Size" description-key="Card size" of-type="Enum" usage="input" required="false" default-value="medium">
+    <property name="Size" display-name-key="Size" description-key="Card size - affects padding and spacing" of-type="Enum" usage="input" required="false" default-value="medium">
       <value name="small" display-name-key="Small">Small</value>
       <value name="medium" display-name-key="Medium">Medium</value>
       <value name="large" display-name-key="Large">Large</value>
@@ -35,8 +35,10 @@
     
     <!-- Output Properties -->
     <property name="Selected" display-name-key="Selected" description-key="Whether the card is currently selected" of-type="TwoOptions" usage="output" />
-    <property name="Clicked" display-name-key="Clicked" description-key="Triggers when the card is clicked (toggles true/false)" of-type="TwoOptions" usage="output" />
-    <property name="ActionClicked" display-name-key="Action Clicked" description-key="Triggers when the footer action button is clicked" of-type="TwoOptions" usage="output" />
+    
+    <!-- Events -->
+    <event name="OnCardSelect" display-name-key="On Card Select" description-key="Fires when the card is clicked" />
+    <event name="OnActionSelect" display-name-key="On Action Select" description-key="Fires when the action button is clicked" />
     
     <resources>
       <code path="index.ts" order="1"/>
