@@ -2,14 +2,12 @@ import * as React from 'react';
 import {
     FluentProvider,
     webLightTheme,
-    Tooltip,
     makeStyles,
     tokens,
-    Button,
-    mergeClasses,
 } from '@fluentui/react-components';
 import {
     NavDrawer,
+    NavDrawerHeader,
     NavDrawerBody,
     NavCategory,
     NavCategoryItem,
@@ -19,6 +17,7 @@ import {
     NavSectionHeader,
     NavDivider,
     AppItem,
+    Hamburger,
     NavDrawerProps,
 } from '@fluentui/react-nav';
 import {
@@ -60,58 +59,18 @@ import {
     DataArea20Regular,
     DocumentBulletListMultiple20Filled,
     DocumentBulletListMultiple20Regular,
-    Navigation20Regular,
 } from '@fluentui/react-icons';
-
-// Drawer width when expanded
-const DRAWER_WIDTH = 280;
-const COLLAPSED_WIDTH = 48;
 
 // Styles
 const useStyles = makeStyles({
     root: {
         height: '100%',
+        width: '100%',
         overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
         backgroundColor: tokens.colorNeutralBackground2,
-        transition: 'width 0.2s ease-in-out',
-    },
-    rootExpanded: {
-        width: `${DRAWER_WIDTH}px`,
-    },
-    rootCollapsed: {
-        width: `${COLLAPSED_WIDTH}px`,
-    },
-    // Top toggle area - contains hamburger, always visible
-    toggleArea: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '8px',
-        boxSizing: 'border-box',
-        backgroundColor: tokens.colorNeutralBackground2,
-    },
-    hamburgerButton: {
-        minWidth: '32px',
-        minHeight: '32px',
-    },
-    // Drawer container - expands/collapses
-    drawerContainer: {
-        flex: 1,
-        overflow: 'hidden',
-        transition: 'opacity 0.2s ease-in-out',
-    },
-    drawerContainerOpen: {
-        opacity: 1,
-    },
-    drawerContainerClosed: {
-        opacity: 0,
-        height: 0,
-        overflow: 'hidden',
     },
     navDrawer: {
         height: '100%',
-        width: '100%',
     },
     headerImage: {
         width: '32px',
@@ -322,64 +281,46 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
 
     return (
         <FluentProvider theme={appliedTheme}>
-            <div className={mergeClasses(
-                styles.root,
-                isOpen ? styles.rootExpanded : styles.rootCollapsed
-            )}>
-                {/* Top Toggle Area - ALWAYS visible with hamburger */}
-                <div className={styles.toggleArea}>
-                    <Tooltip content={isOpen ? "Collapse navigation" : "Expand navigation"} relationship="label">
-                        <Button
-                            appearance="subtle"
-                            icon={<Navigation20Regular />}
-                            onClick={handleToggle}
-                            className={styles.hamburgerButton}
-                            aria-label={isOpen ? "Collapse navigation" : "Expand navigation"}
-                        />
-                    </Tooltip>
-                </div>
+            <div className={styles.root}>
+                <NavDrawer
+                    open={isOpen}
+                    type={drawerType}
+                    selectedValue={currentSelectedKey}
+                    defaultSelectedValue={defaultSelectedKey}
+                    onNavItemSelect={handleNavItemSelect}
+                    className={styles.navDrawer}
+                    multiple
+                >
+                    {/* NavDrawerHeader with Hamburger - standard Fluent pattern */}
+                    <NavDrawerHeader>
+                        <Hamburger onClick={handleToggle} />
+                    </NavDrawerHeader>
 
-                {/* Drawer Container - expands/collapses vertically */}
-                <div className={mergeClasses(
-                    styles.drawerContainer,
-                    isOpen ? styles.drawerContainerOpen : styles.drawerContainerClosed
-                )}>
-                    {isOpen && (
-                        <NavDrawer
-                            open={true}
-                            type={drawerType}
-                            selectedValue={currentSelectedKey}
-                            defaultSelectedValue={defaultSelectedKey}
-                            onNavItemSelect={handleNavItemSelect}
-                            className={styles.navDrawer}
-                            multiple
-                        >
-                            <NavDrawerBody>
-                                {headerTitle && (
-                                    <AppItem
-                                        icon={
-                                            headerImageUrl ? (
-                                                <HeaderImage
-                                                    src={headerImageUrl}
-                                                    fallbackIcon={HeaderIconComponent}
-                                                />
-                                            ) : HeaderIconComponent ? (
-                                                <HeaderIconComponent />
-                                            ) : (
-                                                <PersonCircle32Regular />
-                                            )
-                                        }
-                                        onClick={onHeaderSelect}
-                                        style={{ cursor: onHeaderSelect ? 'pointer' : 'default' }}
-                                    >
-                                        {headerTitle}
-                                    </AppItem>
-                                )}
-                                {renderNavItems(navTree)}
-                            </NavDrawerBody>
-                        </NavDrawer>
-                    )}
-                </div>
+                    <NavDrawerBody>
+                        {/* App header with title/icon */}
+                        {headerTitle && (
+                            <AppItem
+                                icon={
+                                    headerImageUrl ? (
+                                        <HeaderImage
+                                            src={headerImageUrl}
+                                            fallbackIcon={HeaderIconComponent}
+                                        />
+                                    ) : HeaderIconComponent ? (
+                                        <HeaderIconComponent />
+                                    ) : (
+                                        <PersonCircle32Regular />
+                                    )
+                                }
+                                onClick={onHeaderSelect}
+                                style={{ cursor: onHeaderSelect ? 'pointer' : 'default' }}
+                            >
+                                {headerTitle}
+                            </AppItem>
+                        )}
+                        {renderNavItems(navTree)}
+                    </NavDrawerBody>
+                </NavDrawer>
             </div>
         </FluentProvider>
     );
