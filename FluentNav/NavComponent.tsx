@@ -6,6 +6,7 @@ import {
     makeStyles,
     tokens,
     Button,
+    mergeClasses,
 } from '@fluentui/react-components';
 import {
     NavDrawer,
@@ -59,39 +60,58 @@ import {
     DataArea20Regular,
     DocumentBulletListMultiple20Filled,
     DocumentBulletListMultiple20Regular,
-    NavigationRegular,
+    Navigation20Regular,
 } from '@fluentui/react-icons';
+
+// Drawer width when expanded
+const DRAWER_WIDTH = 280;
+const COLLAPSED_WIDTH = 48;
 
 // Styles
 const useStyles = makeStyles({
     root: {
-        width: '100%',
         height: '100%',
         overflow: 'hidden',
         display: 'flex',
-        flexDirection: 'row',
-        backgroundColor: tokens.colorNeutralBackground2,
-    },
-    hamburgerContainer: {
-        display: 'flex',
         flexDirection: 'column',
-        width: '48px',
-        minWidth: '48px',
-        height: '100%',
         backgroundColor: tokens.colorNeutralBackground2,
-        borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
+        transition: 'width 0.2s ease-in-out',
+    },
+    rootExpanded: {
+        width: `${DRAWER_WIDTH}px`,
+    },
+    rootCollapsed: {
+        width: `${COLLAPSED_WIDTH}px`,
+    },
+    // Top toggle area - contains hamburger, always visible
+    toggleArea: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '8px',
+        boxSizing: 'border-box',
+        backgroundColor: tokens.colorNeutralBackground2,
     },
     hamburgerButton: {
-        margin: '8px',
+        minWidth: '32px',
+        minHeight: '32px',
     },
-    navDrawerWrapper: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '100%',
-        flexGrow: 1,
+    // Drawer container - expands/collapses
+    drawerContainer: {
+        flex: 1,
+        overflow: 'hidden',
+        transition: 'opacity 0.2s ease-in-out',
+    },
+    drawerContainerOpen: {
+        opacity: 1,
+    },
+    drawerContainerClosed: {
+        opacity: 0,
+        height: 0,
+        overflow: 'hidden',
     },
     navDrawer: {
         height: '100%',
+        width: '100%',
     },
     headerImage: {
         width: '32px',
@@ -147,6 +167,7 @@ export interface IFluentNavProps {
     headerImageUrl?: string;
     isOpen?: boolean;
     drawerType?: 'inline' | 'overlay';
+    theme?: typeof webLightTheme;
 }
 
 // Icon mapping
@@ -267,6 +288,7 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
         headerImageUrl,
         isOpen: controlledIsOpen,
         drawerType = 'inline',
+        theme,
     } = props;
 
     const styles = useStyles();
@@ -296,17 +318,20 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
 
     const navTree = React.useMemo(() => buildNavTree(items), [items]);
     const HeaderIconComponent = headerIcon ? getIcon(headerIcon) : undefined;
-    const theme = webLightTheme;
+    const appliedTheme = theme ?? webLightTheme;
 
     return (
-        <FluentProvider theme={theme}>
-            <div className={styles.root}>
-                {/* Hamburger column - always visible */}
-                <div className={styles.hamburgerContainer}>
+        <FluentProvider theme={appliedTheme}>
+            <div className={mergeClasses(
+                styles.root,
+                isOpen ? styles.rootExpanded : styles.rootCollapsed
+            )}>
+                {/* Top Toggle Area - ALWAYS visible with hamburger */}
+                <div className={styles.toggleArea}>
                     <Tooltip content={isOpen ? "Collapse navigation" : "Expand navigation"} relationship="label">
                         <Button
                             appearance="subtle"
-                            icon={<NavigationRegular />}
+                            icon={<Navigation20Regular />}
                             onClick={handleToggle}
                             className={styles.hamburgerButton}
                             aria-label={isOpen ? "Collapse navigation" : "Expand navigation"}
@@ -314,42 +339,47 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
                     </Tooltip>
                 </div>
 
-                {/* NavDrawer - only visible when open */}
-                {isOpen && (
-                    <NavDrawer
-                        open={true}
-                        type={drawerType}
-                        selectedValue={currentSelectedKey}
-                        defaultSelectedValue={defaultSelectedKey}
-                        onNavItemSelect={handleNavItemSelect}
-                        className={styles.navDrawer}
-                        multiple
-                    >
-                        <NavDrawerBody>
-                            {headerTitle && (
-                                <AppItem
-                                    icon={
-                                        headerImageUrl ? (
-                                            <HeaderImage
-                                                src={headerImageUrl}
-                                                fallbackIcon={HeaderIconComponent}
-                                            />
-                                        ) : HeaderIconComponent ? (
-                                            <HeaderIconComponent />
-                                        ) : (
-                                            <PersonCircle32Regular />
-                                        )
-                                    }
-                                    onClick={onHeaderSelect}
-                                    style={{ cursor: onHeaderSelect ? 'pointer' : 'default' }}
-                                >
-                                    {headerTitle}
-                                </AppItem>
-                            )}
-                            {renderNavItems(navTree)}
-                        </NavDrawerBody>
-                    </NavDrawer>
-                )}
+                {/* Drawer Container - expands/collapses vertically */}
+                <div className={mergeClasses(
+                    styles.drawerContainer,
+                    isOpen ? styles.drawerContainerOpen : styles.drawerContainerClosed
+                )}>
+                    {isOpen && (
+                        <NavDrawer
+                            open={true}
+                            type={drawerType}
+                            selectedValue={currentSelectedKey}
+                            defaultSelectedValue={defaultSelectedKey}
+                            onNavItemSelect={handleNavItemSelect}
+                            className={styles.navDrawer}
+                            multiple
+                        >
+                            <NavDrawerBody>
+                                {headerTitle && (
+                                    <AppItem
+                                        icon={
+                                            headerImageUrl ? (
+                                                <HeaderImage
+                                                    src={headerImageUrl}
+                                                    fallbackIcon={HeaderIconComponent}
+                                                />
+                                            ) : HeaderIconComponent ? (
+                                                <HeaderIconComponent />
+                                            ) : (
+                                                <PersonCircle32Regular />
+                                            )
+                                        }
+                                        onClick={onHeaderSelect}
+                                        style={{ cursor: onHeaderSelect ? 'pointer' : 'default' }}
+                                    >
+                                        {headerTitle}
+                                    </AppItem>
+                                )}
+                                {renderNavItems(navTree)}
+                            </NavDrawerBody>
+                        </NavDrawer>
+                    )}
+                </div>
             </div>
         </FluentProvider>
     );

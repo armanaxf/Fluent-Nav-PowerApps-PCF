@@ -5,6 +5,8 @@ import * as React from "react";
 export class FluentBreadcrumb implements ComponentFramework.ReactControl<IInputs, IOutputs> {
     private notifyOutputChanged: () => void;
     private selectedKey = "";
+    private context: ComponentFramework.Context<IInputs>;
+    private containerWidth = 0;
 
     constructor() {
         // Empty
@@ -16,11 +18,16 @@ export class FluentBreadcrumb implements ComponentFramework.ReactControl<IInputs
         state: ComponentFramework.Dictionary
     ): void {
         this.notifyOutputChanged = notifyOutputChanged;
+        this.context = context;
     }
 
     private handleItemSelect = (key: string): void => {
         this.selectedKey = key;
         this.notifyOutputChanged();
+        // Fire the OnItemSelect event
+        if (this.context.events?.OnItemSelect) {
+            this.context.events.OnItemSelect();
+        }
     };
 
     private mapDatasetToItems(context: ComponentFramework.Context<IInputs>): BreadcrumbItemData[] {
@@ -31,7 +38,7 @@ export class FluentBreadcrumb implements ComponentFramework.ReactControl<IInputs
             // Return default placeholder items to help users understand the structure
             return [
                 { key: "home", name: "Home", icon: "HomeRegular" },
-                { key: "products", name: "Products", icon: "BoxRegular" },
+                { key: "products", name: "Products" },
                 { key: "electronics", name: "Electronics" },
                 { key: "phones", name: "Phones" },
             ];
@@ -49,11 +56,22 @@ export class FluentBreadcrumb implements ComponentFramework.ReactControl<IInputs
     }
 
     public updateView(context: ComponentFramework.Context<IInputs>): React.ReactElement {
+        this.context = context;
         const items = this.mapDatasetToItems(context);
+
+        // Get container width from allocatedWidth
+        const containerWidth = context.mode.allocatedWidth ?? 300;
+
+        // Get theme from fluentDesignLanguage if available
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+        const fluentTheme = (context as any).fluentDesignLanguage?.tokenTheme;
 
         return React.createElement(FluentBreadcrumbComponent, {
             items: items,
-            onItemSelect: this.handleItemSelect
+            onItemSelect: this.handleItemSelect,
+            containerWidth: containerWidth,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            theme: fluentTheme,
         });
     }
 

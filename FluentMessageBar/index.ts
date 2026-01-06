@@ -4,9 +4,8 @@ import * as React from "react";
 
 export class FluentMessageBar implements ComponentFramework.ReactControl<IInputs, IOutputs> {
     private notifyOutputChanged: () => void;
-    private isDismissed = false;
     private actionClicked = false;
-    private lastResetDismiss: boolean | null = null;
+    private context: ComponentFramework.Context<IInputs>;
 
     constructor() {
         // Empty
@@ -18,18 +17,23 @@ export class FluentMessageBar implements ComponentFramework.ReactControl<IInputs
         state: ComponentFramework.Dictionary
     ): void {
         this.notifyOutputChanged = notifyOutputChanged;
-        // Initialize lastResetDismiss to current value
-        this.lastResetDismiss = context.parameters.ResetDismiss?.raw ?? false;
+        this.context = context;
     }
 
     private handleDismiss = (): void => {
-        this.isDismissed = true;
+        // Just fire the OnDismiss event - let host app handle visibility
         this.notifyOutputChanged();
+        if (this.context.events?.OnDismiss) {
+            this.context.events.OnDismiss();
+        }
     };
 
     private handleAction = (): void => {
         this.actionClicked = !this.actionClicked;
         this.notifyOutputChanged();
+        if (this.context.events?.OnAction) {
+            this.context.events.OnAction();
+        }
     };
 
     private parseIntent(intentStr: string | null): "info" | "success" | "warning" | "error" {
@@ -41,15 +45,7 @@ export class FluentMessageBar implements ComponentFramework.ReactControl<IInputs
     }
 
     public updateView(context: ComponentFramework.Context<IInputs>): React.ReactElement {
-        // Check if ResetDismiss changed - if toggled, reset dismissed state
-        const currentResetDismiss = context.parameters.ResetDismiss?.raw ?? false;
-        if (currentResetDismiss !== this.lastResetDismiss) {
-            this.lastResetDismiss = currentResetDismiss;
-            // Reset dismissed state when ResetDismiss is toggled
-            if (this.isDismissed) {
-                this.isDismissed = false;
-            }
-        }
+        this.context = context;
 
         const message = context.parameters.Message?.raw ?? "This is a message";
         const intent = this.parseIntent(context.parameters.Intent?.raw);
@@ -57,21 +53,25 @@ export class FluentMessageBar implements ComponentFramework.ReactControl<IInputs
         const dismissible = context.parameters.Dismissible?.raw ?? false;
         const actionText = context.parameters.ActionText?.raw ?? undefined;
 
+        // Get theme from fluentDesignLanguage if available
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+        const fluentTheme = (context as any).fluentDesignLanguage?.tokenTheme;
+
         return React.createElement(FluentMessageBarComponent, {
             message: message,
             intent: intent,
             title: title,
             dismissible: dismissible,
             actionText: actionText,
-            isDismissed: this.isDismissed,
             onDismiss: this.handleDismiss,
             onAction: this.handleAction,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            theme: fluentTheme,
         });
     }
 
     public getOutputs(): IOutputs {
         return {
-            IsDismissed: this.isDismissed,
             ActionClicked: this.actionClicked,
         };
     }

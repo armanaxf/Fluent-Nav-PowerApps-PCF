@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="FluentBreadcrumb" constructor="FluentBreadcrumb" version="0.0.1" display-name-key="FluentBreadcrumb" description-key="Fluent UI v9 Breadcrumb Component for Canvas Apps" control-type="virtual">
+  <control namespace="FluentBreadcrumb" constructor="FluentBreadcrumb" version="1.4.3" display-name-key="FluentBreadcrumb" description-key="Fluent UI v9 Breadcrumb Component for Canvas Apps" control-type="virtual">
     <external-service-usage enabled="false">
     </external-service-usage>
     
@@ -11,9 +11,11 @@
       <property-set name="ItemIcon" display-name-key="Item Icon" description-key="Optional Fluent UI icon name" of-type="SingleLine.Text" usage="bound" required="false" />
     </data-set>
     
-    
     <!-- Output Properties -->
     <property name="SelectedKey" display-name-key="Selected Key" description-key="The key of the clicked breadcrumb item" of-type="SingleLine.Text" usage="output" />
+    
+    <!-- Events -->
+    <event name="OnItemSelect" display-name-key="On Item Select" description-key="Fires when a breadcrumb item is clicked" />
     
     <resources>
       <code path="index.ts" order="1"/>

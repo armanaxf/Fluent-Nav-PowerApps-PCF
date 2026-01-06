@@ -8,6 +8,7 @@ import {
     Button,
     FluentProvider,
     webLightTheme,
+    Theme,
 } from "@fluentui/react-components";
 import { DismissRegular } from "@fluentui/react-icons";
 
@@ -17,9 +18,9 @@ export interface FluentMessageBarComponentProps {
     title?: string;
     dismissible?: boolean;
     actionText?: string;
-    isDismissed: boolean;
     onDismiss?: () => void;
     onAction?: () => void;
+    theme?: Theme;
 }
 
 export const FluentMessageBarComponent: React.FC<FluentMessageBarComponentProps> = (props) => {
@@ -29,12 +30,13 @@ export const FluentMessageBarComponent: React.FC<FluentMessageBarComponentProps>
         title,
         dismissible,
         actionText,
-        isDismissed,
         onDismiss,
         onAction,
+        theme,
     } = props;
 
     const handleDismiss = React.useCallback(() => {
+        // Just fire the event - let host app handle visibility
         onDismiss?.();
     }, [onDismiss]);
 
@@ -56,13 +58,10 @@ export const FluentMessageBarComponent: React.FC<FluentMessageBarComponentProps>
         }
     };
 
-    // If dismissed, don't render anything
-    if (isDismissed) {
-        return null;
-    }
+    const appliedTheme = theme ?? webLightTheme;
 
     return (
-        <FluentProvider theme={webLightTheme} style={{ width: "100%", height: "100%" }}>
+        <FluentProvider theme={appliedTheme} style={{ width: "100%", height: "100%" }}>
             <MessageBar intent={getIntent()} style={{ width: "100%" }}>
                 <MessageBarBody>
                     {title && <MessageBarTitle>{title}</MessageBarTitle>}
