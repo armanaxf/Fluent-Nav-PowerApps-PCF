@@ -1,144 +1,169 @@
 # PowerApps Modern Controls Plus
 
-A suite of **Fluent UI v9** PCF components for Power Apps Canvas Apps, designed to fill gaps in the native modern controls.
+A suite of professional, Fluent UI v9 based PCF components for Power Apps Canvas Apps. These components provide a premium look and feel, matching the modern Microsoft design language.
 
-## Components
+![Modern Controls Overview](assets/overview.png)
+*(Replace with actual screenshot of components in action)*
 
-| Component | Description | Status |
-|-----------|-------------|--------|
-| **FluentNav** | Navigation drawer with hierarchical menu support | ✅ Available |
-| **FluentMessageBar** | Inline message bar for alerts, warnings, and notifications | ✅ Available |
-| **FluentBreadcrumb** | Hierarchical navigation breadcrumb | ✅ Available |
-| **FluentCard** | Content card container | ✅ Available |
-| FluentDialog | Modal dialog for confirmations and forms | 🔜 Coming Soon |
-| FluentToast | Toast notifications | 🔜 Coming Soon |
-| FluentDateRangePicker | Date range selection | 🔜 Coming Soon |
+## Components Included
+
+| Component | Description |
+|-----------|-------------|
+| **FluentNav** | A collapsible, responsive navigation drawer with support for nested items and icons. |
+| **FluentHamburger** | A lightweight hamburger menu button to control the navigation drawer. |
+| **FluentBreadcrumb** | A breadcrumb navigation trail. |
+| **FluentMessageBar** | A notification/alert bar with various intents (Success, Error, Warning, Info). |
+| **FluentCard** | A versatile card component for displaying content. |
+
+---
 
 ## Installation
 
-1. Download the latest solution `.zip` from [Releases](../../releases)
-2. Import the solution into your Power Apps environment
-3. The components will be available in your Canvas App under **Code Components**
+1. Download the latest `Solution.zip` from the [Releases](https://github.com/armanaxf/PowerApps-ModernControls-Plus/releases) page.
+2. Go to the **Power Apps Maker Portal** (make.powerapps.com).
+3. Navigate to **Solutions** -> **Import solution**.
+4. Select the `Solution.zip` file and follow the wizard to import.
+5. In your Canvas App, go to **Insert** -> **Get more components** -> **Code**.
+6. Search for `FluentNav`, `FluentHamburger`, etc., and import them.
 
-## Usage
+---
 
-### FluentNav
+## Component Usage
 
-A navigation drawer component with support for:
-- Hierarchical menu items (parent/child)
-- Collapsible sidebar
-- Custom header with icon or image
-- Selection events
-- **Default placeholder items** shown when no data is connected
+### 1. FluentNav `FluentNav`
 
-**Properties:**
-| Property | Type | Description |
-|----------|------|-------------|
-| `navItems` | Dataset | Collection of navigation items |
-| `DefaultSelectedKey` | Text | Initially selected item key |
-| `HeaderTitle` | Text | Title in the header |
-| `HeaderIcon` | Text | Fluent icon name for header |
-| `HeaderImageUrl` | URL | Custom image URL for header |
-| `SelectedKey` | Text (Output) | Currently selected item key |
-| `IsOpen` | Boolean (Output) | Whether drawer is expanded |
-| `HeaderSelected` | Boolean (Output) | Triggers on header click |
-
-**Setting up navItems:**
-
-Create a collection in Power Apps with these columns:
-
-| Column | Required | Description |
-|--------|----------|-------------|
-| `ItemKey` | ✅ Yes | Unique identifier for the item |
-| `ItemName` | ✅ Yes | Display text for the item |
-| `ItemIcon` | No | Fluent UI icon name (e.g., `Home`, `Settings`, `Document`) |
-| `ItemParentKey` | No | Key of parent item (for nested/hierarchical items) |
-
-**Example (Power Apps formula):**
-```
-ClearCollect(
-    NavItems,
-    { ItemKey: "home", ItemName: "Home", ItemIcon: "Home", ItemParentKey: "" },
-    { ItemKey: "dashboard", ItemName: "Dashboard", ItemIcon: "Grid", ItemParentKey: "" },
-    { ItemKey: "documents", ItemName: "Documents", ItemIcon: "Document", ItemParentKey: "" },
-    { ItemKey: "reports", ItemName: "Reports", ItemIcon: "Document", ItemParentKey: "documents" },
-    { ItemKey: "templates", ItemName: "Templates", ItemIcon: "Document", ItemParentKey: "documents" },
-    { ItemKey: "settings", ItemName: "Settings", ItemIcon: "Settings", ItemParentKey: "" }
-);
-```
-
-Then bind `NavItems` to the `navItems` property of the control.
-
-### FluentMessageBar
-
-An inline message bar for displaying alerts and notifications.
+The core navigation component.
 
 **Properties:**
-| Property | Type | Description |
-|----------|------|-------------|
-| `Message` | Text | The message to display |
-| `Intent` | Enum | `info`, `success`, `warning`, or `error` |
-| `Title` | Text | Optional title above the message |
-| `Dismissible` | Boolean | Whether user can dismiss the bar |
-| `ActionText` | Text | Optional action button text |
-| `IsDismissed` | Boolean (Output) | Triggers when dismissed |
-| `ActionClicked` | Boolean (Output) | Triggers when action clicked |
+- **Items** (Table): The navigation structure.
+  - `key`: Unique ID.
+  - `name`: Display text.
+  - `icon`: Icon name (e.g., "Home", "Settings", "Document", "Grid", "Apps").
+  - `parentKey`: (Optional) Key of the parent item for nesting.
+- **SelectedKey** (String): The key of the currently selected item.
+- **IsOpen** (Boolean): Controls the expanded/collapsed state. *Note: The component manages its own state, but this property can force a state.*
+- **HeaderTitle** (String): Title displayed at the top of the nav.
+- **HeaderImageUrl** (String): URL for the header avatar/logo.
 
-### FluentBreadcrumb
+**Outputs:**
+- **IsCollapsed** (Boolean): Returns `true` if the nav is currently collapsed.
+- **SelectedKey** (String): The current selection.
 
-A breadcrumb component for hierarchical navigation. Automatically inherits Power Apps modern theme.
+**Events:**
+- **OnSelect**: Fires when an item is selected. use `FluentNav1.SelectedKey` to get the value.
+
+**Power Fx Example:**
+```powerfx
+// Items Table
+Table(
+    { key: "home", name: "Home", icon: "Home" },
+    { key: "docs", name: "Documents", icon: "Document" },
+    { key: "settings", name: "Settings", icon: "Settings" }
+)
+
+// OnSelect
+Notify("Selected: " & FluentNav1.SelectedKey)
+```
+
+![FluentNav Screenshot](assets/fluent-nav.png)
+
+---
+
+### 2. FluentHamburger `FluentHamburger`
+
+A dedicated button to toggle the Navigation component externally.
 
 **Properties:**
-| Property | Type | Description |
-|----------|------|-------------|
-| `items` | Dataset | Collection of breadcrumb items (ItemKey, ItemName, ItemIcon) |
-| `SelectedKey` | Text (Output) | Key of the clicked breadcrumb item |
+- **Tooltip** (String): Text shown on hover (default: "Toggle navigation").
+- **Theme** (String): "webLightTheme" or custom.
 
-### FluentCard
+**Events:**
+- **OnSelect**: Fires when clicked.
 
-A versatile card component for displaying content in a structured layout.
+**Common Usage (Toggle Navigation):**
+Place this component outside the `FluentNav` (or in a header bar).
+
+```powerfx
+// OnSelect
+Set(varNavOpen, !varNavOpen)
+```
+*Link this variable to the `FluentNav.IsOpen` property.*
+
+![FluentHamburger Screenshot](assets/fluent-hamburger.png)
+
+---
+
+### 3. FluentMessageBar `FluentMessageBar`
+
+Display status messages to the user.
 
 **Properties:**
-| Property | Type | Description |
-|----------|------|-------------|
-| `Title` | Text | Card title text |
-| `Subtitle` | Text | Card subtitle or description |
-| `ImageUrl` | URL | URL for the card header image |
-| `Size` | Enum | `small`, `medium`, or `large` |
-| `Orientation` | Enum | `vertical` or `horizontal` |
-| `Selectable` | Boolean | Whether the card can be selected |
-| `Selected` | Boolean (Output) | Whether the card is currently selected |
-| `Clicked` | Boolean (Output) | Triggers when the card is clicked |
+- **Message** (String): The text to display.
+- **Intent** (String): The style of the message. Options:
+  - `success` (Green)
+  - `error` (Red)
+  - `warning` (Yellow)
+  - `info` (Blue)
+- **Type** (String): `message` (inline) or `alert` (popup style).
 
-## Development
-
-### Prerequisites
-- Node.js 18+
-- Power Platform CLI (`pac`)
-
-### Build
-```bash
-npm install
-npm run build
+**Example:**
+```powerfx
+// Show a success message
+If(varSuccess, 
+   "Record saved successfully!", 
+   "Please check your input."
+)
 ```
 
-### Test locally
-```bash
-npm start
+![FluentMessageBar Screenshot](assets/fluent-message-bar.png)
+
+---
+
+### 4. FluentBreadcrumb `FluentBreadcrumb`
+
+Navigation trail for hierarchical data.
+
+**Properties:**
+- **Items** (Table):
+  - `key`: Unique ID.
+  - `text`: Display text.
+  - `href`: (Optional) Link URL.
+
+**Events:**
+- **OnSelect**: Fires when a crumb is clicked.
+
+**Example:**
+```powerfx
+Table(
+    { key: "home", text: "Home" },
+    { key: "folder", text: "My Files" },
+    { key: "file", text: "Report.pdf" }
+)
 ```
 
-### Package solution
-```bash
-cd Solution
-msbuild /t:build /restore
-```
+![FluentBreadcrumb Screenshot](assets/fluent-breadcrumb.png)
 
-The solution `.zip` will be in `Solution/bin/Debug/`.
+---
 
-## License
+## Build & Development
 
-MIT
+To build the solution locally:
 
-## Author
+1. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
 
-JLG
+2. **Build Components:**
+   ```bash
+   npm run build
+   ```
+   *Note: The production build is optimized to reduce bundle size.*
+
+3. **Package Solution:**
+   ```bash
+   dotnet build Solution/Solution.cdsproj --configuration Release
+   ```
+
+---
+*Maintained by PowerApps Modern Controls Plus Team*

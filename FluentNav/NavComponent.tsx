@@ -42,10 +42,19 @@ const useStyles = makeStyles({
         height: '100%',
         width: '100%',
         overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
         backgroundColor: tokens.colorNeutralBackground2,
     },
     navDrawer: {
         height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    navDrawerBody: {
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
     },
     headerImage: {
         width: '32px',
@@ -254,7 +263,7 @@ export const FluentNavComponent: React.FC<IFluentNavProps> = (props) => {
                         <Hamburger onClick={handleToggle} />
                     </NavDrawerHeader>
 
-                    <NavDrawerBody>
+                    <NavDrawerBody className={styles.navDrawerBody}>
                         {/* App header with title/icon */}
                         {headerTitle && (
                             <AppItem
