@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
   <control namespace="FluentNav" constructor="FluentNav" version="1.4.6" display-name-key="FluentNav" description-key="Fluent UI v2 Navigation Drawer Component for Canvas Apps" control-type="virtual">
     <external-service-usage enabled="false">
     </external-service-usage>

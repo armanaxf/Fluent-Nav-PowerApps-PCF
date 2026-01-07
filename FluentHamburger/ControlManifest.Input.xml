@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
   <control namespace="FluentHamburger" constructor="FluentHamburger" version="1.0.1" display-name-key="FluentHamburger" description-key="Fluent UI Hamburger Menu Button for Canvas Apps" control-type="virtual">
     <external-service-usage enabled="false">
     </external-service-usage>
