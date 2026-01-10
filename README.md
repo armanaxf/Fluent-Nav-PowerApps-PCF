@@ -2,18 +2,15 @@
 
 A suite of professional, Fluent UI v9 based PCF components for Power Apps Canvas Apps. These components provide a premium look and feel, matching the modern Microsoft design language.
 
-![Modern Controls Overview](assets/overview.png)
-*(Replace with actual screenshot of components in action)*
-
 ## Components Included
 
 | Component | Description |
 |-----------|-------------|
-| **FluentNav** | A collapsible, responsive navigation drawer with support for nested items and icons. |
-| **FluentHamburger** | A lightweight hamburger menu button to control the navigation drawer. |
 | **FluentBreadcrumb** | A breadcrumb navigation trail. |
 | **FluentMessageBar** | A notification/alert bar with various intents (Success, Error, Warning, Info). |
 | **FluentCard** | A versatile card component for displaying content. |
+| **FluentDialog** | A modal/non-modal dialog for confirmations, alerts, and forms. |
+| **FluentToast** | Temporary notification messages that auto-dismiss. |
 
 ---
 
@@ -24,146 +21,178 @@ A suite of professional, Fluent UI v9 based PCF components for Power Apps Canvas
 3. Navigate to **Solutions** -> **Import solution**.
 4. Select the `Solution.zip` file and follow the wizard to import.
 5. In your Canvas App, go to **Insert** -> **Get more components** -> **Code**.
-6. Search for `FluentNav`, `FluentHamburger`, etc., and import them.
+6. Search for the component name and import it.
 
 ---
 
 ## Component Usage
 
-### 1. FluentNav `FluentNav`
+### FluentDialog
 
-The core navigation component.
+A modal dialog for confirmations, alerts, and user interactions. Blocks page interaction until dismissed.
 
 **Properties:**
-- **Items** (Table): The navigation structure.
-  - `key`: Unique ID.
-  - `name`: Display text.
-  - `icon`: Icon name (e.g., "Home", "Settings", "Document", "Grid", "Apps").
-  - `parentKey`: (Optional) Key of the parent item for nesting.
-- **SelectedKey** (String): The key of the currently selected item.
-- **IsOpen** (Boolean): Controls the expanded/collapsed state. *Note: The component manages its own state, but this property can force a state.*
-- **HeaderTitle** (String): Title displayed at the top of the nav.
-- **HeaderImageUrl** (String): URL for the header avatar/logo.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `IsOpen` | Boolean | `false` | Controls dialog visibility. Bind to a variable. |
+| `ModalType` | Enum | `"modal"` | `"modal"` (blocks page), `"nonmodal"` (page interactive), `"alert"` (must use button) |
+| `Title` | Text | `"Dialog Title"` | Header text |
+| `ContentText` | Text | | Main message body |
+| `PrimaryButtonText` | Text | `"OK"` | Primary action button label |
+| `SecondaryButtonText` | Text | `"Cancel"` | Secondary action button label |
+| `ShowPrimaryButton` | Boolean | `true` | Show/hide primary button |
+| `ShowSecondaryButton` | Boolean | `true` | Show/hide secondary button |
+| `ShowCloseButton` | Boolean | `false` | Show X button in title bar (auto-shown for non-modal) |
+| `ActionsPosition` | Enum | `"end"` | `"end"` (right-aligned) or `"start"` (left-aligned) |
+| `FluidActions` | Boolean | `false` | Stretch buttons to full width |
 
 **Outputs:**
-- **IsCollapsed** (Boolean): Returns `true` if the nav is currently collapsed.
-- **SelectedKey** (String): The current selection.
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `UserAction` | Text | Last action: `"primary"`, `"secondary"`, `"close"`, or `"dismiss"` |
 
 **Events:**
-- **OnSelect**: Fires when an item is selected. use `FluentNav1.SelectedKey` to get the value.
 
-**Power Fx Example:**
+| Event | When it fires |
+|-------|---------------|
+| `OnPrimaryAction` | Primary button clicked |
+| `OnSecondaryAction` | Secondary button clicked |
+| `OnClose` | Dialog closed (any method) |
+| `OnOpenChange` | Open state changes |
+
+**Example - Confirmation Dialog:**
+
 ```powerfx
-// Items Table
-Table(
-    { key: "home", name: "Home", icon: "Home" },
-    { key: "docs", name: "Documents", icon: "Document" },
-    { key: "settings", name: "Settings", icon: "Settings" }
-)
+// Button to open dialog
+Set(varShowDialog, true)
 
-// OnSelect
-Notify("Selected: " & FluentNav1.SelectedKey)
+// FluentDialog1.OnPrimaryAction
+Remove(MyCollection, SelectedRecord);
+Set(varShowDialog, false)
+
+// FluentDialog1.OnSecondaryAction  
+Set(varShowDialog, false)
 ```
-
-![FluentNav Screenshot](assets/fluent-nav.png)
 
 ---
 
-### 2. FluentHamburger `FluentHamburger`
+### FluentToast
 
-A dedicated button to toggle the Navigation component externally.
+Temporary notification messages that appear and auto-dismiss. Ideal for success messages, errors, and status updates.
+
+> **Important**: The toast renders inside its component boundary. Give the component sufficient width/height (minimum 400x200px) and place it in a corner of your screen.
+
+**How It Works:**
+
+The toast uses **edge-triggered dispatch**. A toast appears when `DispatchToast` transitions from `false` → `true`.
+
+```
+DispatchToast:  false → true → false → true
+                       ↑              ↑
+                  Toast 1        Toast 2
+```
 
 **Properties:**
-- **Tooltip** (String): Text shown on hover (default: "Toggle navigation").
-- **Theme** (String): "webLightTheme" or custom.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `DispatchToast` | Boolean | `false` | `false` → `true` shows a new toast |
+| `Title` | Text | `"Notification"` | Toast header |
+| `BodyText` | Text | | Toast message body |
+| `Subtitle` | Text | | Small text below body |
+| `Intent` | Enum | `"info"` | `"success"` (green), `"info"` (blue), `"warning"` (yellow), `"error"` (red) |
+| `Position` | Enum | `"bottom-end"` | Toast position: `"top"`, `"top-start"`, `"top-end"`, `"bottom"`, `"bottom-start"`, `"bottom-end"` |
+| `Timeout` | Number | `3000` | Auto-dismiss in milliseconds. Use `-1` for no auto-dismiss. |
+| `PauseOnHover` | Boolean | `true` | Pause timeout when mouse hovers |
+| `PauseOnWindowBlur` | Boolean | `false` | Pause timeout when window loses focus |
+| `MaxToasts` | Number | `5` | Maximum visible toasts (extras are queued) |
+| `ShowAction` | Boolean | `false` | Show action link in toast |
+| `ActionText` | Text | `"Dismiss"` | Action link text |
+| `DismissAllToasts` | Boolean | `false` | `false` → `true` dismisses all visible toasts |
+| `Appearance` | Enum | `"default"` | `"default"` or `"inverted"` (dark) |
+
+**Outputs:**
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `ToastStatus` | Text | Current status: `"queued"`, `"visible"`, `"dismissed"`, `"unmounted"` |
+| `LastToastId` | Text | ID of last dispatched toast |
+| `ActionClicked` | Boolean | `true` when action link clicked |
+| `VisibleToastCount` | Number | Count of visible toasts |
 
 **Events:**
-- **OnSelect**: Fires when clicked.
 
-**Common Usage (Toggle Navigation):**
-Place this component outside the `FluentNav` (or in a header bar).
+| Event | When it fires |
+|-------|---------------|
+| `OnToastDispatched` | Toast created |
+| `OnToastDismissed` | Toast dismissed (timeout or action) |
+| `OnActionClick` | User clicks action link |
+| `OnStatusChange` | Toast lifecycle changes |
+
+**Example - Show Success Toast:**
 
 ```powerfx
-// OnSelect
-Set(varNavOpen, !varNavOpen)
+// Submit button OnSelect
+SubmitForm(EditForm1);
+Set(varToastTitle, "Saved!");
+Set(varToastIntent, "success");
+Set(varShowToast, true);
+Set(varShowToast, false)  // Reset for next use
 ```
-*Link this variable to the `FluentNav.IsOpen` property.*
 
-![FluentHamburger Screenshot](assets/fluent-hamburger.png)
+**Example - Auto-Reset Pattern:**
+
+```powerfx
+// FluentToast1.OnToastDismissed
+Set(varShowToast, false)  // Auto-reset when toast disappears
+```
 
 ---
 
-### 3. FluentMessageBar `FluentMessageBar`
+### FluentMessageBar
 
-Display status messages to the user.
+Display inline status messages to the user.
 
 **Properties:**
-- **Message** (String): The text to display.
-- **Intent** (String): The style of the message. Options:
-  - `success` (Green)
-  - `error` (Red)
-  - `warning` (Yellow)
-  - `info` (Blue)
+- **Message** (String): Text to display.
+- **Intent** (String): `success`, `error`, `warning`, `info`.
 - **Type** (String): `message` (inline) or `alert` (popup style).
 
-**Example:**
-```powerfx
-// Show a success message
-If(varSuccess, 
-   "Record saved successfully!", 
-   "Please check your input."
-)
-```
-
-![FluentMessageBar Screenshot](assets/fluent-message-bar.png)
-
 ---
 
-### 4. FluentBreadcrumb `FluentBreadcrumb`
+### FluentBreadcrumb
 
 Navigation trail for hierarchical data.
 
 **Properties:**
-- **Items** (Table):
-  - `key`: Unique ID.
-  - `text`: Display text.
-  - `href`: (Optional) Link URL.
+- **Items** (Table): Crumbs with `key`, `text`, `href`.
 
 **Events:**
 - **OnSelect**: Fires when a crumb is clicked.
 
-**Example:**
-```powerfx
-Table(
-    { key: "home", text: "Home" },
-    { key: "folder", text: "My Files" },
-    { key: "file", text: "Report.pdf" }
-)
-```
+---
 
-![FluentBreadcrumb Screenshot](assets/fluent-breadcrumb.png)
+### FluentCard
+
+A versatile card component for displaying content.
 
 ---
 
 ## Build & Development
 
-To build the solution locally:
+```bash
+# Install Dependencies
+npm install
 
-1. **Install Dependencies:**
-   ```bash
-   npm install
-   ```
+# Build Components
+npm run build
 
-2. **Build Components:**
-   ```bash
-   npm run build
-   ```
-   *Note: The production build is optimized to reduce bundle size.*
-
-3. **Package Solution:**
-   ```bash
-   dotnet build Solution/Solution.cdsproj --configuration Release
-   ```
+# Package Solution
+dotnet build Solution/Solution.cdsproj --configuration Release
+```
 
 ---
+
 *Maintained by PowerApps Modern Controls Plus Team*

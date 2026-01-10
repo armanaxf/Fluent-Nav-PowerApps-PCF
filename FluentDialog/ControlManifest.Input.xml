@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <control 
+    namespace="FluentDialog" 
+    constructor="FluentDialog" 
+    version="1.2.0" 
+    display-name-key="FluentDialog" 
+    description-key="Fluent UI v9 Dialog Component for Canvas Apps" 
+    control-type="virtual">
+    
+    <external-service-usage enabled="false" />
+    
+    <!-- Input Properties -->
+    <property 
+      name="IsOpen" 
+      display-name-key="Is Open" 
+      description-key="Controls whether the dialog is visible. Set to a variable and toggle it to show/hide the dialog." 
+      of-type="TwoOptions" 
+      usage="input" 
+      required="true" />
+
+    <property 
+      name="ModalType" 
+      display-name-key="Modal Type" 
+      description-key="Dialog behavior type: Modal blocks page interaction, Non-Modal page remains interactive, Alert must dismiss via button" 
+      of-type="Enum" 
+      usage="input" 
+      required="false"
+      default-value="modal"
+      pfx-default-value="&quot;modal&quot;">
+      <value name="modal" display-name-key="Modal">modal</value>
+      <value name="nonmodal" display-name-key="Non-Modal">nonmodal</value>
+      <value name="alert" display-name-key="Alert">alert</value>
+    </property>
+
+    <property 
+      name="Title" 
+      display-name-key="Title" 
+      description-key="Dialog title displayed at the top" 
+      of-type="SingleLine.Text" 
+      usage="input" 
+      required="false"
+      default-value="Dialog Title"
+      pfx-default-value="&quot;Dialog Title&quot;" />
+
+    <property 
+      name="ContentText" 
+      display-name-key="Content Text" 
+      description-key="Main message or content displayed in the dialog body" 
+      of-type="Multiple" 
+      usage="input" 
+      required="false"
+      default-value="This is the dialog content. Add your message here."
+      pfx-default-value="&quot;This is the dialog content. Add your message here.&quot;" />
+
+    <property 
+      name="PrimaryButtonText" 
+      display-name-key="Primary Button Text" 
+      description-key="Text for the main action button" 
+      of-type="SingleLine.Text" 
+      usage="input" 
+      required="false"
+      default-value="OK"
+      pfx-default-value="&quot;OK&quot;" />
+
+    <property 
+      name="SecondaryButtonText" 
+      display-name-key="Secondary Button Text" 
+      description-key="Text for the secondary action button" 
+      of-type="SingleLine.Text" 
+      usage="input" 
+      required="false"
+      default-value="Cancel"
+      pfx-default-value="&quot;Cancel&quot;" />
+
+    <property 
+      name="ShowPrimaryButton" 
+      display-name-key="Show Primary Button" 
+      description-key="Show or hide the primary button" 
+      of-type="TwoOptions" 
+      usage="input" 
+      required="false"
+      default-value="true"
+      pfx-default-value="true" />
+
+    <property 
+      name="ShowSecondaryButton" 
+      display-name-key="Show Secondary Button" 
+      description-key="Show or hide the secondary button" 
+      of-type="TwoOptions" 
+      usage="input" 
+      required="false"
+      default-value="true"
+      pfx-default-value="true" />
+
+    <property 
+      name="ShowCloseButton" 
+      display-name-key="Show Close Button" 
+      description-key="Show X button in the title bar. Automatically shown for Non-Modal dialogs." 
+      of-type="TwoOptions" 
+      usage="input" 
+      required="false"
+      default-value="false"
+      pfx-default-value="false" />
+
+    <property 
+      name="ActionsPosition" 
+      display-name-key="Actions Position" 
+      description-key="Where to align the action buttons: End is right-aligned, Start is left-aligned" 
+      of-type="Enum" 
+      usage="input" 
+      required="false"
+      default-value="end"
+      pfx-default-value="&quot;end&quot;">
+      <value name="end" display-name-key="End">end</value>
+      <value name="start" display-name-key="Start">start</value>
+    </property>
+
+    <property 
+      name="FluidActions" 
+      display-name-key="Stretch Buttons" 
+      description-key="Stretch buttons to equal widths filling the dialog footer" 
+      of-type="TwoOptions" 
+      usage="input" 
+      required="false"
+      default-value="false"
+      pfx-default-value="false" />
+    
+    <!-- Output Properties -->
+    <property 
+      name="UserAction" 
+      display-name-key="User Action" 
+      description-key="Returns which action the user took: primary, secondary, close, or dismiss" 
+      of-type="SingleLine.Text" 
+      usage="output" />
+    
+    <!-- Events -->
+    <event name="OnPrimaryAction" display-name-key="On Primary Action" description-key="Fires when the primary button is clicked" />
+    <event name="OnSecondaryAction" display-name-key="On Secondary Action" description-key="Fires when the secondary button is clicked" />
+    <event name="OnClose" display-name-key="On Close" description-key="Fires when the dialog is closed by any means" />
+    <event name="OnOpenChange" display-name-key="On Open Change" description-key="Fires whenever the dialog open state changes" />
+    
+    <resources>
+      <code path="index.ts" order="1"/>
+      <platform-library name="React" version="16.14.0" />
+      <platform-library name="Fluent" version="9.46.2" />
+    </resources>
+  </control>
+</manifest>
