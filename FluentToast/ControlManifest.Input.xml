@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <control 
+    namespace="FluentToast" 
+    constructor="FluentToast" 
+    version="1.1.0" 
+    display-name-key="FluentToast" 
+    description-key="Fluent UI v9 Toast Component for Canvas Apps" 
+    control-type="virtual">
+    
+    <external-service-usage enabled="false" />
+    
+    <!-- Input Properties -->
+    <property 
+      name="DispatchToast" 
+      display-name-key="Dispatch Toast" 
+      description-key="Set to Yes to dispatch a new toast. Toggle back to No to dispatch another." 
+      of-type="TwoOptions" 
+      usage="input" 
+      required="true" />
+
+    <property 
+      name="Title" 
+      display-name-key="Title" 
+      description-key="Toast title text" 
+      of-type="SingleLine.Text" 
+      usage="input" 
+      required="false"
+      default-value="Notification"
+      pfx-default-value="&quot;Notification&quot;" />
+
+    <property 
+      name="BodyText" 
+      display-name-key="Body Text" 
+      description-key="Toast body content/message" 
+      of-type="Multiple" 
+      usage="input" 
+      required="false" />
+
+    <property 
+      name="Subtitle" 
+      display-name-key="Subtitle" 
+      description-key="Toast subtitle" 
+      of-type="SingleLine.Text" 
+      usage="input" 
+      required="false" />
+
+    <property 
+      name="Intent" 
+      display-name-key="Intent" 
+      description-key="Toast intent: success (green), info (blue), warning (yellow), error (red)" 
+      of-type="Enum" 
+      usage="input" 
+      required="false" 
+      default-value="info"
+      pfx-default-value="&quot;info&quot;">
+      <value name="success" display-name-key="Success">success</value>
+      <value name="info" display-name-key="Info">info</value>
+      <value name="warning" display-name-key="Warning">warning</value>
+      <value name="error" display-name-key="Error">error</value>
+    </property>
+
+    <property 
+      name="Position" 
+      display-name-key="Position" 
+      description-key="Toast position on screen" 
+      of-type="Enum" 
+      usage="input" 
+      required="false" 
+      default-value="bottom-end"
+      pfx-default-value="&quot;bottom-end&quot;">
+      <value name="bottom" display-name-key="Bottom">bottom</value>
+      <value name="bottom-start" display-name-key="Bottom Start">bottom-start</value>
+      <value name="bottom-end" display-name-key="Bottom End">bottom-end</value>
+      <value name="top" display-name-key="Top">top</value>
+      <value name="top-start" display-name-key="Top Start">top-start</value>
+      <value name="top-end" display-name-key="Top End">top-end</value>
+    </property>
+
+    <property 
+      name="Timeout" 
+      display-name-key="Timeout" 
+      description-key="Auto-dismiss timeout in milliseconds (-1 for no auto-dismiss)" 
+      of-type="Whole.None" 
+      usage="input" 
+      required="false" 
+      default-value="3000" />
+
+    <property 
+      name="PauseOnHover" 
+      display-name-key="Pause On Hover" 
+      description-key="Pause timeout when mouse hovers over toast" 
+      of-type="TwoOptions" 
+      usage="input" 
+      required="false"
+      default-value="true"
+      pfx-default-value="true" />
+
+    <property 
+      name="PauseOnWindowBlur" 
+      display-name-key="Pause On Window Blur" 
+      description-key="Pause timeout when window loses focus" 
+      of-type="TwoOptions" 
+      usage="input" 
+      required="false"
+      default-value="false"
+      pfx-default-value="false" />
+
+    <property 
+      name="ShowAction" 
+      display-name-key="Show Action" 
+      description-key="Whether to show an action link in the title" 
+      of-type="TwoOptions" 
+      usage="input" 
+      required="false"
+      default-value="false"
+      pfx-default-value="false" />
+
+    <property 
+      name="ActionText" 
+      display-name-key="Action Text" 
+      description-key="Text for the action link" 
+      of-type="SingleLine.Text" 
+      usage="input" 
+      required="false" 
+      default-value="Dismiss"
+      pfx-default-value="&quot;Dismiss&quot;" />
+
+    <property 
+      name="Appearance" 
+      display-name-key="Appearance" 
+      description-key="Toast appearance style" 
+      of-type="Enum" 
+      usage="input" 
+      required="false" 
+      default-value="default"
+      pfx-default-value="&quot;default&quot;">
+      <value name="default" display-name-key="Default">default</value>
+      <value name="inverted" display-name-key="Inverted">inverted</value>
+    </property>
+
+    <property 
+      name="DismissAllToasts" 
+      display-name-key="Dismiss All Toasts" 
+      description-key="Set to Yes to dismiss all visible toasts" 
+      of-type="TwoOptions" 
+      usage="input" 
+      required="false"
+      default-value="false"
+      pfx-default-value="false" />
+
+    <property 
+      name="MaxToasts" 
+      display-name-key="Max Toasts" 
+      description-key="Maximum number of toasts visible at once" 
+      of-type="Whole.None" 
+      usage="input" 
+      required="false" 
+      default-value="5" />
+    
+    <!-- Output Properties -->
+    <property 
+      name="ToastStatus" 
+      display-name-key="Toast Status" 
+      description-key="Current toast status: queued, visible, dismissed, unmounted" 
+      of-type="SingleLine.Text" 
+      usage="output" />
+
+    <property 
+      name="LastToastId" 
+      display-name-key="Last Toast ID" 
+      description-key="ID of the last dispatched toast" 
+      of-type="SingleLine.Text" 
+      usage="output" />
+
+    <property 
+      name="ActionClicked" 
+      display-name-key="Action Clicked" 
+      description-key="Set to true when action link is clicked" 
+      of-type="TwoOptions" 
+      usage="output" />
+
+    <property 
+      name="VisibleToastCount" 
+      display-name-key="Visible Toast Count" 
+      description-key="Number of currently visible toasts" 
+      of-type="Whole.None" 
+      usage="output" />
+    
+    <!-- Events -->
+    <event name="OnToastDispatched" display-name-key="On Toast Dispatched" description-key="Fires when a toast is dispatched" />
+    <event name="OnToastDismissed" display-name-key="On Toast Dismissed" description-key="Fires when a toast is dismissed" />
+    <event name="OnActionClick" display-name-key="On Action Click" description-key="Fires when the action link is clicked" />
+    <event name="OnStatusChange" display-name-key="On Status Change" description-key="Fires when toast status changes" />
+    
+    <resources>
+      <code path="index.ts" order="1"/>
+      <platform-library name="React" version="16.14.0" />
+      <platform-library name="Fluent" version="9.46.2" />
+    </resources>
+  </control>
+</manifest>

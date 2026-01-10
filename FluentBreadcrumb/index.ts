@@ -24,9 +24,9 @@ export class FluentBreadcrumb implements ComponentFramework.ReactControl<IInputs
     private handleItemSelect = (key: string): void => {
         this.selectedKey = key;
         this.notifyOutputChanged();
-        // Fire the OnItemSelect event
-        if (this.context.events?.OnItemSelect) {
-            this.context.events.OnItemSelect();
+        // Fire the OnSelect event
+        if (this.context.events?.OnSelect) {
+            this.context.events.OnSelect();
         }
     };
 
@@ -77,7 +77,7 @@ export class FluentBreadcrumb implements ComponentFramework.ReactControl<IInputs
 
     public getOutputs(): IOutputs {
         return {
-            SelectedKey: this.selectedKey
+            Selected: this.selectedKey
         };
     }
 

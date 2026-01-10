@@ -12,10 +12,10 @@
     </data-set>
     
     <!-- Output Properties -->
-    <property name="SelectedKey" display-name-key="Selected Key" description-key="The key of the clicked breadcrumb item" of-type="SingleLine.Text" usage="output" />
+    <property name="Selected" display-name-key="Selected" description-key="The key of the clicked breadcrumb item" of-type="SingleLine.Text" usage="output" />
     
     <!-- Events -->
-    <event name="OnItemSelect" display-name-key="On Item Select" description-key="Fires when a breadcrumb item is clicked" />
+    <common-event name="OnSelect" />
     
     <resources>
       <code path="index.ts" order="1"/>
